@@ -1,6 +1,12 @@
 ## CinemaBh
 CinemaApp is a web-based ticketing application that allows online movie ticket purchases for a specific movie company with multiple subsidiaries across the country/world.  The application provides the users with different easy-to-use services like purchasing tickets, seat reservations, projection schedule overview, etc.
 
+## Java version
+21.0.10. 
+
+## Postgres version 
+16.11
+
 ## Dependencies
 * spring-boot-starter-web
 * spring-boot-starter-data-jpa
