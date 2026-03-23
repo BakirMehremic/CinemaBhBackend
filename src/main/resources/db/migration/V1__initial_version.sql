@@ -1,34 +1,34 @@
 CREATE TYPE "movie_status" AS ENUM (
-  'draft',
-  'published',
-  'archived'
+  'DRAFT',
+  'PUBLISHED',
+  'ARCHIVED'
 );
 
 CREATE TYPE "personnel_type" AS ENUM (
-  'director',
-  'writer',
-  'cast'
+  'DIRECTOR',
+  'WRITER',
+  'CAST'
 );
 
 CREATE TYPE "seat_type" AS ENUM (
-  'regular',
-  'vip',
-  'love_seat'
+  'REGULAR',
+  'VIP',
+  'LOVE_SEAT'
 );
 
 CREATE TYPE "user_role" AS ENUM (
-  'admin',
-  'registered_user'
+  'ADMIN',
+  'REGISTERED USER'
 );
 
 CREATE TYPE "draft_step_status" AS ENUM (
-  'step_1',
-  'step_2',
-  'step_3'
+  'STEP_1',
+  'STEP_2',
+  'STEP_3'
 );
 
 CREATE TABLE "users" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "role" user_role NOT NULL,
   "password_hash" varchar(255) NOT NULL,
   "first_name" varchar(255) NOT NULL,
@@ -41,12 +41,12 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "countries" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE "cities" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar(255) NOT NULL,
   "country_id" integer NOT NULL,
 
@@ -54,7 +54,7 @@ CREATE TABLE "cities" (
 );
 
 CREATE TABLE "venues" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar(255) NOT NULL,
   "street" varchar(255) NOT NULL,
   "street_number" varchar(255),
@@ -64,13 +64,13 @@ CREATE TABLE "venues" (
 );
 
 CREATE TABLE "halls" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "hall_name" varchar(255),
   "venue_id" integer NOT NULL
 );
 
 CREATE TABLE "movies" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar(255) NOT NULL,
   "pg_rating" varchar(255) NOT NULL,
   "language" varchar(255) NOT NULL,
@@ -86,37 +86,37 @@ CREATE TABLE "movies" (
 );
 
 CREATE TABLE "photos" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "image_url" varchar(255) NOT NULL,
   "is_cover_photo" boolean,
   "movie_id" integer NOT NULL
 );
 
 CREATE TABLE "genres" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar(255) NOT NULL
 );
 
 CREATE TABLE "movies_genres" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "genre_id" integer NOT NULL,
   "movie_id" integer NOT NULL
 );
 
 CREATE TABLE "personnel" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "name" varchar(255) NOT NULL,
   "type" personnel_type NOT NULL
 );
 
 CREATE TABLE "movies_personnel" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "movie_id" integer NOT NULL,
   "personnel_id" integer NOT NULL
 );
 
 CREATE TABLE "seats" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "row_letter" varchar(255) NOT NULL,
   "row_number" integer NOT NULL,
   "hall_id" integer NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE "seats" (
 );
 
 CREATE TABLE "projections" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "movie_id" integer NOT NULL,
   "hall_id" integer NOT NULL,
   "start_time" timestamp NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE "projections" (
 );
 
 CREATE TABLE "users_projections_seats" (
-  "id" INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "projection_id" integer NOT NULL,
   "seat_id" integer NOT NULL,
   "user_id" integer NOT NULL,

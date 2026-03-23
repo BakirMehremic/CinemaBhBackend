@@ -1,0 +1,78 @@
+package com.atlantbh.cinemabh.entity;
+
+import com.atlantbh.cinemabh.enums.DraftStepStatus;
+import com.atlantbh.cinemabh.enums.MoviePublishedStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@Table(name = "movies")
+public class Movie {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(name = "pg_rating", nullable = false)
+  private String pgRating;
+
+  @Column(name = "name", nullable = false)
+  private String name;
+
+  @Column(name = "duration", nullable = false)
+  private int duration;
+
+  @Column(name = "trailer_link")
+  private String trailerLink;
+
+  @Column(name = "synopsis")
+  private String synopsis;
+
+  @Column(name = "imdb_rating", precision = 2, scale = 1)
+  private BigDecimal imdbRating;
+
+  @Column(name = "rotten_tomatoes_rating", precision = 2, scale = 1)
+  private BigDecimal rottenTomatoesRating;
+
+  @Column(name = "start_showing_date", nullable = false)
+  private LocalDate startShowingDate;
+
+  @Column(name = "end_showing_date", nullable = false)
+  private LocalDate endShowingDate;
+
+  @Column(name = "draft_step")
+  @Enumerated(EnumType.STRING)
+  private DraftStepStatus draftStepStatus;
+
+  @Column(name = "status")
+  @Enumerated(EnumType.STRING)
+  private MoviePublishedStatus moviePublishedStatus;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "movies_genres",
+      joinColumns = @JoinColumn(name = "movie_id"),
+      inverseJoinColumns = @JoinColumn(name = "genre_id"))
+  private Set<Genre> genres = new HashSet<>();
+
+  @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
+  private Set<Photo> photos = new HashSet<>();
+}
