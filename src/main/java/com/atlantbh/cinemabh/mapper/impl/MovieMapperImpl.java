@@ -15,7 +15,7 @@ public class MovieMapperImpl implements MovieMapper {
 
     String coverPhotoUrl =
         movie.getPhotos().stream()
-            .filter(photo -> Boolean.TRUE.equals(photo.getIsCoverPhoto()))
+            .filter(Photo::getIsCoverPhoto)
             .findFirst()
             .map(Photo::getImageUrl)
             .orElse(null);
@@ -23,6 +23,6 @@ public class MovieMapperImpl implements MovieMapper {
     List<String> genres = movie.getGenres().stream().map(Genre::getName).toList();
 
     return new MoviePreviewResponse(
-        movie.getName(), movie.getId(), movie.getDuration(), coverPhotoUrl, genres);
+        movie.getName(), movie.getId(), movie.getDurationInMinutes(), coverPhotoUrl, genres);
   }
 }

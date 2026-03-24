@@ -37,8 +37,8 @@ public class Movie {
   @Column(name = "name", nullable = false)
   private String name;
 
-  @Column(name = "duration", nullable = false)
-  private int duration;
+  @Column(name = "duration_minutes", nullable = false)
+  private int durationInMinutes;
 
   @Column(name = "trailer_link")
   private String trailerLink;

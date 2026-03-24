@@ -22,122 +22,122 @@ CREATE TYPE "user_role" AS ENUM (
 );
 
 CREATE TYPE "draft_step_status" AS ENUM (
-  'STEP_1',
-  'STEP_2',
-  'STEP_3'
+  'BASIC_INFO',
+  'PHOTOS_AND_CAST',
+  'PROJECTIONS'
 );
 
 CREATE TABLE "users" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "role" user_role NOT NULL,
-  "password_hash" varchar(255) NOT NULL,
-  "first_name" varchar(255) NOT NULL,
-  "last_name" varchar(255),
-  "phone_number" varchar(255) UNIQUE,
-  "email" varchar(255) UNIQUE NOT NULL,
-  "image_url" varchar(255),
+  "password_hash" VARCHAR(255) NOT NULL,
+  "first_name" VARCHAR(100) NOT NULL,
+  "last_name" VARCHAR(80),
+  "phone_number" VARCHAR(25) UNIQUE,
+  "email" VARCHAR(255) UNIQUE NOT NULL,
+  "image_url" VARCHAR(255),
   "created_at"  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "city_id" integer
+  "city_id" BIGINT
 );
 
 CREATE TABLE "countries" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "name" varchar(255) UNIQUE NOT NULL
+  "name" VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE "cities" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "name" varchar(255) NOT NULL,
-  "country_id" integer NOT NULL,
+  "name" VARCHAR(100) NOT NULL,
+  "country_id" BIGINT NOT NULL,
 
   UNIQUE("name", "country_id")
 );
 
 CREATE TABLE "venues" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "name" varchar(255) NOT NULL,
-  "street" varchar(255) NOT NULL,
-  "street_number" varchar(255),
-  "phone" varchar(255),
-  "image_url" varchar(255),
-  "city_id" integer NOT NULL
+  "name" VARCHAR(100) NOT NULL,
+  "street" VARCHAR(100) NOT NULL,
+  "street_number" VARCHAR(20),
+  "phone" VARCHAR(255),
+  "image_url" VARCHAR(255),
+  "city_id" BIGINT NOT NULL
 );
 
 CREATE TABLE "halls" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "hall_name" varchar(255),
-  "venue_id" integer NOT NULL
+  "hall_name" VARCHAR(100),
+  "venue_id" BIGINT NOT NULL
 );
 
 CREATE TABLE "movies" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "name" varchar(255) NOT NULL,
-  "pg_rating" varchar(255) NOT NULL,
-  "language" varchar(255) NOT NULL,
-  "duration" integer NOT NULL,
-  "trailer_link" varchar(255),
-  "synopsis" varchar(255),
+  "name" VARCHAR(200) NOT NULL,
+  "pg_rating" VARCHAR(20) NOT NULL,
+  "language" VARCHAR(50) NOT NULL,
+  "duration_minutes" INTEGER NOT NULL,
+  "trailer_link" VARCHAR(255),
+  "synopsis" TEXT,
   "status" movie_status NOT NULL,
-  "imdb_rating" decimal(2,1),
-  "rotten_tomatoes_rating" decimal(2,1),
-  "start_showing_date" date NOT NULL,
-  "end_showing_date" date NOT NULL,
+  "imdb_rating" DECIMAL(2,1),
+  "rotten_tomatoes_rating" DECIMAL(2,1),
+  "start_showing_date" DATE NOT NULL,
+  "end_showing_date" DATE NOT NULL,
   "draft_step" draft_step_status
 );
 
 CREATE TABLE "photos" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "image_url" varchar(255) NOT NULL,
-  "is_cover_photo" boolean,
-  "movie_id" integer NOT NULL
+  "image_url" VARCHAR(255) NOT NULL,
+  "is_cover_photo" BOOLEAN,
+  "movie_id" BIGINT NOT NULL
 );
 
 CREATE TABLE "genres" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "name" varchar(255) NOT NULL
+  "name" VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE "movies_genres" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "genre_id" integer NOT NULL,
-  "movie_id" integer NOT NULL
+  "genre_id" BIGINT NOT NULL,
+  "movie_id" BIGINT NOT NULL
 );
 
 CREATE TABLE "personnel" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "name" varchar(255) NOT NULL,
+  "name" VARCHAR(100) NOT NULL,
   "type" personnel_type NOT NULL
 );
 
 CREATE TABLE "movies_personnel" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "movie_id" integer NOT NULL,
-  "personnel_id" integer NOT NULL
+  "movie_id" BIGINT NOT NULL,
+  "personnel_id" BIGINT NOT NULL
 );
 
 CREATE TABLE "seats" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "row_letter" varchar(255) NOT NULL,
-  "row_number" integer NOT NULL,
-  "hall_id" integer NOT NULL,
-  "seat_type" "seat_type" NOT NULL,
+  "row_letter" VARCHAR(5) NOT NULL,
+  "row_number" BIGINT NOT NULL,
+  "hall_id" BIGINT NOT NULL,
+  "seat_type" seat_type NOT NULL,
 
   UNIQUE("row_letter", "row_number", "hall_id")
 );
 
 CREATE TABLE "projections" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "movie_id" integer NOT NULL,
-  "hall_id" integer NOT NULL,
-  "start_time" timestamp NOT NULL,
-  "end_time" timestamp NOT NULL
+  "movie_id" BIGINT NOT NULL,
+  "hall_id" BIGINT NOT NULL,
+  "start_time" TIMESTAMP NOT NULL,
+  "end_time" TIMESTAMP NOT NULL
 );
 
 CREATE TABLE "users_projections_seats" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "projection_id" integer NOT NULL,
-  "seat_id" integer NOT NULL,
-  "user_id" integer NOT NULL,
+  "projection_id" BIGINT NOT NULL,
+  "seat_id" BIGINT NOT NULL,
+  "user_id" BIGINT NOT NULL,
 
   UNIQUE("seat_id", "user_id", "projection_id")
 );

@@ -4,5 +4,5 @@ import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
 import org.springframework.data.domain.Page;
 
 public interface VenueService {
-  public Page<VenuePreviewResponse> getVenuePreviewsPaginated(Integer pageNumber, Integer PageSize);
+  Page<VenuePreviewResponse> getVenuePreviewsPaginated(int pageNumber, int PageSize);
 }
