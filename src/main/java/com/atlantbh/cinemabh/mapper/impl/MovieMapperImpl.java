@@ -15,7 +15,7 @@ public class MovieMapperImpl implements MovieMapper {
 
     String coverPhotoUrl =
         movie.getPhotos().stream()
-            .filter(Photo::getIsCoverPhoto)
+            .filter(Photo::isCoverPhoto)
             .findFirst()
             .map(Photo::getImageUrl)
             .orElse(null);

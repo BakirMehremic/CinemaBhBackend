@@ -34,6 +34,9 @@ public class Movie {
   @Column(name = "pg_rating", nullable = false)
   private String pgRating;
 
+  @Column(name = "language", nullable = false)
+  private String language;
+
   @Column(name = "name", nullable = false)
   private String name;
 

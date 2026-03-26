@@ -19,13 +19,13 @@ import lombok.Setter;
 public class Photo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "image_url", nullable = false)
   private String imageUrl;
 
-  @Column(name = "is_cover_photo")
-  private Boolean isCoverPhoto;
+  @Column(name = "is_cover_photo", nullable = false)
+  private boolean coverPhoto;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "movie_id", nullable = false)
