@@ -21,8 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -63,12 +61,10 @@ public class Movie {
 
   @Column(name = "draft_step")
   @Enumerated(EnumType.STRING)
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private DraftStepStatus draftStepStatus;
 
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private MoviePublishedStatus moviePublishedStatus;
 
   @ManyToMany(fetch = FetchType.LAZY)

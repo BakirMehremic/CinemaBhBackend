@@ -5,11 +5,14 @@ import com.atlantbh.cinemabh.entity.Venue;
 import com.atlantbh.cinemabh.mapper.VenueMapper;
 import com.atlantbh.cinemabh.repository.VenueRepository;
 import com.atlantbh.cinemabh.service.VenueService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,10 +21,20 @@ public class VenueServiceImpl implements VenueService {
   private final VenueMapper venueMapper;
 
   @Override
+  @Transactional(readOnly = true)
   public Page<VenuePreviewResponse> getVenuePreviewsPaginated(int pageNumber, int pageSize) {
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-    Page<Venue> pagedResult = venueRepository.getVenuesPaginated(pageable);
-    return pagedResult.map(venueMapper::toPreviewResponse);
+    Page<Long> pagedIds = venueRepository.getVenueIdsPaginated(pageable);
+    if (pagedIds.isEmpty()) {
+      return new PageImpl<>(List.of(), pageable, pagedIds.getTotalElements());
+    }
+
+    List<Venue> venues = venueRepository.getVenuesWithCitiesByIds(pagedIds.getContent());
+
+    List<VenuePreviewResponse> content =
+        venueMapper.toPreviewResponseList(pagedIds.getContent(), venues);
+
+    return new PageImpl<>(content, pageable, pagedIds.getTotalElements());
   }
 }
