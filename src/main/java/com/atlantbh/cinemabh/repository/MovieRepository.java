@@ -15,12 +15,12 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
   @Query(
       "SELECT m.id FROM Movie m WHERE m.startShowingDate > CURRENT_DATE "
           + "AND m.moviePublishedStatus=PUBLISHED")
-  Page<Long> getUpcomingMovieIds(Pageable pageable);
+  Page<Long> getUpcomingMovieIdsPaginated(Pageable pageable);
 
   @Query(
       "SELECT m.id FROM Movie m WHERE CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate "
           + "AND m.moviePublishedStatus=PUBLISHED")
-  Page<Long> getShowingMovieIds(Pageable pageable);
+  Page<Long> getShowingMovieIdsPaginated(Pageable pageable);
 
   @EntityGraph(attributePaths = {"genres", "photos"})
   @Query("SELECT m FROM Movie m WHERE m.id in :ids")

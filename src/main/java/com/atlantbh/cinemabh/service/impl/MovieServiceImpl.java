@@ -29,8 +29,8 @@ public class MovieServiceImpl implements MovieService {
 
     Page<Long> pagedIds =
         switch (showingStatus) {
-          case UPCOMING -> movieRepository.getUpcomingMovieIds(pageable);
-          case SHOWING -> movieRepository.getShowingMovieIds(pageable);
+          case UPCOMING -> movieRepository.getUpcomingMovieIdsPaginated(pageable);
+          case SHOWING -> movieRepository.getShowingMovieIdsPaginated(pageable);
         };
 
     if (pagedIds.isEmpty()) {
