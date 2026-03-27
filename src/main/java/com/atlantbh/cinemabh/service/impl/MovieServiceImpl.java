@@ -19,6 +19,7 @@ public class MovieServiceImpl implements MovieService {
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
 
+  @Override
   @Transactional(readOnly = true)
   public Page<MoviePreviewResponse> getMoviesPreviewPaginated(
       int pageNumber, int pageSize, MovieShowingStatus showingStatus) {

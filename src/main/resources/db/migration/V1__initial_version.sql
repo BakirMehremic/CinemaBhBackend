@@ -78,8 +78,8 @@ CREATE TABLE "movies" (
   "trailer_link" VARCHAR(255),
   "synopsis" TEXT,
   "status" movie_status NOT NULL,
-  "imdb_rating" DECIMAL(2,1),
-  "rotten_tomatoes_rating" DECIMAL(2,1),
+  "imdb_rating" DECIMAL(3,1),
+  "rotten_tomatoes_rating" DECIMAL(5,1),
   "start_showing_date" DATE NOT NULL,
   "end_showing_date" DATE NOT NULL,
   "draft_step" draft_step_status
@@ -98,9 +98,9 @@ CREATE TABLE "genres" (
 );
 
 CREATE TABLE "movies_genres" (
-  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "genre_id" BIGINT NOT NULL,
-  "movie_id" BIGINT NOT NULL
+  "movie_id" BIGINT NOT NULL,
+  PRIMARY KEY ("movie_id", "genre_id")
 );
 
 CREATE TABLE "personnel" (
@@ -110,9 +110,9 @@ CREATE TABLE "personnel" (
 );
 
 CREATE TABLE "movies_personnel" (
-  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "movie_id" BIGINT NOT NULL,
-  "personnel_id" BIGINT NOT NULL
+  "personnel_id" BIGINT NOT NULL,
+   PRIMARY KEY ("movie_id", "personnel_id")
 );
 
 CREATE TABLE "seats" (
@@ -134,12 +134,12 @@ CREATE TABLE "projections" (
 );
 
 CREATE TABLE "users_projections_seats" (
-  "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "projection_id" BIGINT NOT NULL,
   "seat_id" BIGINT NOT NULL,
   "user_id" BIGINT NOT NULL,
 
-  UNIQUE("seat_id", "user_id", "projection_id")
+  UNIQUE("seat_id", "user_id", "projection_id"),
+  PRIMARY KEY("seat_id", "user_id", "projection_id")
 );
 
 CREATE UNIQUE INDEX ON "cities" ("name", "country_id");

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MovieMapperImpl implements MovieMapper {
 
+  @Override
   public MoviePreviewResponse toPreviewResponse(Movie movie) {
 
     String coverPhotoUrl =

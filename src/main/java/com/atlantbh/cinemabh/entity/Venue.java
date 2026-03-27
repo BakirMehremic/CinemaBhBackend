@@ -24,19 +24,17 @@ public class Venue {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "name", nullable = false)
+  @Column(nullable = false)
   private String name;
 
-  @Column(name = "street", nullable = false)
+  @Column(nullable = false)
   private String street;
 
-  @Column(name = "street_number")
-  private String streetNumber;
+  @Column private String streetNumber;
 
-  @Column(name = "phone")
-  private String phone;
+  @Column private String phone;
 
-  @Column(name = "image_url", nullable = false)
+  @Column(nullable = false)
   private String imageUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)

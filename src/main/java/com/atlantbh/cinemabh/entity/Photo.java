@@ -21,7 +21,7 @@ public class Photo {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "image_url", nullable = false)
+  @Column(nullable = false)
   private String imageUrl;
 
   @Column(name = "is_cover_photo", nullable = false)

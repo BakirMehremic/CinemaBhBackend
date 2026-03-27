@@ -12,10 +12,14 @@ import org.springframework.stereotype.Repository;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
   @EntityGraph(attributePaths = {"genres", "photos"})
-  @Query("SELECT m FROM Movie m WHERE CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate")
+  @Query(
+      "SELECT m FROM Movie m WHERE CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate "
+          + "AND m.moviePublishedStatus=PUBLISHED")
   Page<Movie> getShowingMoviesPaginated(Pageable pageable);
 
   @EntityGraph(attributePaths = {"genres", "photos"})
-  @Query("SELECT m FROM Movie m WHERE m.startShowingDate > CURRENT_DATE")
+  @Query(
+      "SELECT m FROM Movie m WHERE m.startShowingDate > CURRENT_DATE "
+          + "AND m.moviePublishedStatus=PUBLISHED")
   Page<Movie> getUpcomingMoviesPaginated(Pageable pageable);
 }

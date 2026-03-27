@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -31,42 +33,42 @@ public class Movie {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "pg_rating", nullable = false)
+  @Column(nullable = false)
   private String pgRating;
 
-  @Column(name = "language", nullable = false)
+  @Column(nullable = false)
   private String language;
 
-  @Column(name = "name", nullable = false)
+  @Column(nullable = false)
   private String name;
 
   @Column(name = "duration_minutes", nullable = false)
   private int durationInMinutes;
 
-  @Column(name = "trailer_link")
-  private String trailerLink;
+  @Column private String trailerLink;
 
-  @Column(name = "synopsis")
-  private String synopsis;
+  @Column private String synopsis;
 
-  @Column(name = "imdb_rating", precision = 2, scale = 1)
+  @Column(precision = 3, scale = 1)
   private BigDecimal imdbRating;
 
-  @Column(name = "rotten_tomatoes_rating", precision = 2, scale = 1)
+  @Column(precision = 5, scale = 1)
   private BigDecimal rottenTomatoesRating;
 
-  @Column(name = "start_showing_date", nullable = false)
+  @Column(nullable = false)
   private LocalDate startShowingDate;
 
-  @Column(name = "end_showing_date", nullable = false)
+  @Column(nullable = false)
   private LocalDate endShowingDate;
 
   @Column(name = "draft_step")
   @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private DraftStepStatus draftStepStatus;
 
-  @Column(name = "status")
+  @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private MoviePublishedStatus moviePublishedStatus;
 
   @ManyToMany(fetch = FetchType.LAZY)

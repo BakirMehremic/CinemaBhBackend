@@ -19,4 +19,9 @@ public class ExceptionResponseHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(Map.of("message", "Internal server error"));
   }
+
+  @ExceptionHandler(InvalidPaginationException.class)
+  public ResponseEntity<String> handlePaginationException(InvalidPaginationException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  }
 }
