@@ -59,13 +59,13 @@ CREATE TABLE "venues" (
   "street" VARCHAR(100) NOT NULL,
   "street_number" VARCHAR(20),
   "phone" VARCHAR(255),
-  "image_url" VARCHAR(255),
+  "image_url" VARCHAR(255) NOT NULL,
   "city_id" BIGINT NOT NULL
 );
 
 CREATE TABLE "halls" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  "hall_name" VARCHAR(100),
+  "name" VARCHAR(100),
   "venue_id" BIGINT NOT NULL
 );
 
@@ -88,7 +88,7 @@ CREATE TABLE "movies" (
 CREATE TABLE "photos" (
   "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "image_url" VARCHAR(255) NOT NULL,
-  "is_cover_photo" BOOLEAN,
+  "is_cover_photo" BOOLEAN NOT NULL,
   "movie_id" BIGINT NOT NULL
 );
 

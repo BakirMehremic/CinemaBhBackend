@@ -21,7 +21,7 @@ public class Hall {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column private String hallName;
+  @Column private String name;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "venue_id", nullable = false)
