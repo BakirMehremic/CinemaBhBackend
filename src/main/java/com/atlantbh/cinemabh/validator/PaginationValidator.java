@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaginationValidator {
 
-  private final int MAX_PAGE_SIZE = 100;
+  private static final int MAX_PAGE_SIZE = 100;
 
   public void validate(int pageNumber, int pageSize) {
     if (pageNumber < 0) {

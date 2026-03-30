@@ -78,8 +78,8 @@ CREATE TABLE "movies" (
   "trailer_link" VARCHAR(255),
   "synopsis" TEXT,
   "status" movie_status NOT NULL,
-  "imdb_rating" DECIMAL(3,1),
-  "rotten_tomatoes_rating" DECIMAL(5,1),
+  "imdb_rating" DECIMAL(3,1) CHECK (imdb_rating BETWEEN 1 AND 10),
+  "rotten_tomatoes_rating" SMALLINT CHECK(rotten_tomatoes_rating BETWEEN 0 AND 100),
   "start_showing_date" DATE NOT NULL,
   "end_showing_date" DATE NOT NULL,
   "draft_step" draft_step_status

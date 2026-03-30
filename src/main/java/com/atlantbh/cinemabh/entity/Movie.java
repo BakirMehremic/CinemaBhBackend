@@ -15,6 +15,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -48,10 +52,14 @@ public class Movie {
   @Column private String synopsis;
 
   @Column(precision = 3, scale = 1)
+  @DecimalMin(value = "1.0")
+  @DecimalMax(value = "10.0")
   private BigDecimal imdbRating;
 
-  @Column(precision = 5, scale = 1)
-  private BigDecimal rottenTomatoesRating;
+  @Column
+  @Min(0)
+  @Max(100)
+  private Short rottenTomatoesRating;
 
   @Column(nullable = false)
   private LocalDate startShowingDate;

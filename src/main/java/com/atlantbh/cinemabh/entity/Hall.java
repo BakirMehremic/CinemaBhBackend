@@ -24,6 +24,6 @@ public class Hall {
   @Column private String hallName;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "venue_id")
+  @JoinColumn(name = "venue_id", nullable = false)
   private Venue venue;
 }

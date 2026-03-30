@@ -38,7 +38,7 @@ public class Venue {
   private String imageUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "city_id")
+  @JoinColumn(name = "city_id", nullable = false)
   private City city;
 
   @OneToMany(mappedBy = "venue", fetch = FetchType.LAZY)
