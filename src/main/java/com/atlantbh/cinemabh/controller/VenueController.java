@@ -1,9 +1,11 @@
 package com.atlantbh.cinemabh.controller;
 
+import com.atlantbh.cinemabh.dto.response.NameIdPair;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
 import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
 import com.atlantbh.cinemabh.service.VenueService;
 import com.atlantbh.cinemabh.validator.PaginationValidator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,12 @@ public class VenueController {
 
     PaginatedResponse<VenuePreviewResponse> response = PaginatedResponse.from(venues);
 
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/names")
+  public ResponseEntity<List<NameIdPair>> getVenuesNameIdPairs() {
+    List<NameIdPair> response = venueService.getAllVenueNameIdPairs();
     return ResponseEntity.ok(response);
   }
 }

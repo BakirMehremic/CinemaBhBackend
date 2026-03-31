@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.repository;
 
+import com.atlantbh.cinemabh.dto.response.NameIdPair;
 import com.atlantbh.cinemabh.entity.Venue;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
   @EntityGraph(attributePaths = {"city"})
   @Query("SELECT v FROM Venue v WHERE v.id IN :ids")
   List<Venue> getVenuesWithCitiesByIds(@Param("ids") List<Long> ids);
+
+  @Query("SELECT new com.atlantbh.cinemabh.dto.response.NameIdPair(v.name, v.id) FROM Venue")
+  List<NameIdPair> getAllVenueNameIdPairs();
 }

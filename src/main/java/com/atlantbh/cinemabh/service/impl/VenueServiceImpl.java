@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import com.atlantbh.cinemabh.dto.response.NameIdPair;
 import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
 import com.atlantbh.cinemabh.entity.Venue;
 import com.atlantbh.cinemabh.mapper.VenueMapper;
@@ -36,5 +37,11 @@ public class VenueServiceImpl implements VenueService {
         venueMapper.toPreviewResponseList(pagedIds.getContent(), venues);
 
     return new PageImpl<>(content, pageable, pagedIds.getTotalElements());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<NameIdPair> getAllVenueNameIdPairs() {
+    return venueRepository.getAllVenueNameIdPairs();
   }
 }
