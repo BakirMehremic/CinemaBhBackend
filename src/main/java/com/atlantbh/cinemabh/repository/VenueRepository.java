@@ -20,6 +20,6 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
   @Query("SELECT v FROM Venue v WHERE v.id IN :ids")
   List<Venue> getVenuesWithCitiesByIds(@Param("ids") List<Long> ids);
 
-  @Query("SELECT new com.atlantbh.cinemabh.dto.response.NameIdPair(v.name, v.id) FROM Venue")
+  @Query("SELECT new com.atlantbh.cinemabh.dto.response.NameIdPair(v.name, v.id) FROM Venue v")
   List<NameIdPair> getAllVenueNameIdPairs();
 }
