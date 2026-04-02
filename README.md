@@ -32,6 +32,15 @@ services like purchasing tickets, seat reservations, projection schedule overvie
 * spring-boot-starter-webmvc-test
 * junit-jupiter
 
+## Environment variables
+
+In the IntelliJ run configuration add these variables:
+
+* DB_URL=jdbc:postgresql://...
+* DB_PASSWORD=...
+* DB_USER=...
+* FRONTENT_URL=http://... (If not provided http://localhost:5173 is the default)
+
 ## Folder structure
 
 Currently the project has separate folders/packages for controllers, services, DTOs, entities, repositories, utils,

@@ -10,7 +10,166 @@ INSERT INTO "movies" ("name",
                       "start_showing_date",
                       "end_showing_date",
                       "draft_step")
-VALUES ('Inception',
+VALUES ('Avengers: Endgame',
+        'PG-13',
+        'English',
+        181,
+        'https://youtube.com/watch?v=TcMBFSGVi1c',
+        'The Avengers assemble once more to reverse Thanos actions.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-03-15',
+        '2026-11-01',
+        NULL),
+       ('The Chase',
+        'PG-13',
+        'English',
+        144,
+        'https://www.youtube.com/watch?v=plmBOSpRGiw',
+        '11 years ago, inspector Malik couldn’t solve a kidnapping case and a little girl died.' ||
+        ' Now with only a few days before the crime gets classified, he decides to reopen the case.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-03-15',
+        '2026-08-01',
+        NULL),
+       ('Black Phone 2',
+        'PG-13',
+        'English',
+        166,
+        'https://www.youtube.com/watch?v=v0kqkRZHqk4',
+        'Four years after defeating The Grabber, Finney Blake is struggling with life after captivity.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-03-15',
+        '2026-9-01',
+        NULL),
+       ('Afterburn',
+        'PG-13',
+        'English',
+        166,
+        'https://www.youtube.com/watch?v=bX3tuGHGurU',
+        'Set against the backdrop of a postapocalyptic Earth whose Eastern Hemisphere was destroyed by a massive solar flare, leaving what life remains mutated from radiation and fallout.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-03-19',
+        '2026-12-01',
+        NULL),
+       ('Chainsaw Man - The Movie: Reze Arc',
+        'PG-13',
+        'English',
+        151,
+        'https://www.youtube.com/watch?v=tAzAhDNdehs',
+        'In a brutal war between devils, hunters, and secret enemies, a mysterious girl named Reze has stepped into Denjis world, and he faces his deadliest battle yet, fueled by love in a world where survival knows no rules.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-03-19',
+        '2026-12-01',
+        NULL),
+       ('War of the Worlds',
+        'PG-13',
+        'English',
+        121,
+        'https://www.youtube.com/watch?v=SM6aEEjc5hA',
+        'Will Radford is a top analyst for Homeland Security who tracks potential threats through a mass surveillance program, until one day an attack by an unknown entity leads him to question whether the government is hiding something from him... and from the rest of the world.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-03-19',
+        '2026-11-01',
+        NULL),
+       ('Inception',
+        'PG-13',
+        'English',
+        177,
+        'https://youtube.com/watch?v=YoHD9XEInc0',
+        'A thief who steals corporate secrets through dream-sharing technology.',
+        'PUBLISHED',
+        8.8,
+        87,
+        '2026-03-01',
+        '2026-09-15',
+        NULL),
+       ('The Dark Knight',
+        'PG-13',
+        'English',
+        151,
+        'https://youtube.com/watch?v=EXeTwQWrcwY',
+        'Batman faces the Joker, a criminal mastermind causing chaos in Gotham.',
+        'DRAFT',
+        9.0,
+        94,
+        '2026-04-10',
+        '2026-12-01',
+        NULL),
+       ('Interstellar',
+        'PG-13',
+        'English',
+        160,
+        'https://youtube.com/watch?v=zSWdZVtXT7E',
+        'A team travels through a wormhole in space to ensure humanity survival.',
+        'PUBLISHED',
+        8.6,
+        88,
+        '2026-04-01',
+        '2026-10-20',
+        'BASIC_INFO'),
+       ('Parasite',
+        'R',
+        'Korean',
+        132,
+        'https://youtube.com/watch?v=5xH0HfJHsaY',
+        'A poor family schemes to become employed by a wealthy household.',
+        'PUBLISHED',
+        8.5,
+        77,
+        '2026-02-01',
+        '2026-11-01',
+        NULL)
+        , -- upcoming from here
+
+       ('Afterburn',
+        'PG-13',
+        'English',
+        181,
+        'https://www.youtube.com/watch?v=bX3tuGHGurU',
+        'Set against the backdrop of a postapocalyptic Earth whose Eastern Hemisphere was destroyed by a massive solar flare, leaving what life remains mutated from radiation and fallout.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-09-19',
+        '2026-12-01',
+        NULL),
+       ('Chainsaw Man - The Movie: Reze Arc',
+        'PG-13',
+        'English',
+        184,
+        'https://www.youtube.com/watch?v=tAzAhDNdehs',
+        'In a brutal war between devils, hunters, and secret enemies, a mysterious girl named Reze has stepped into Denjis world, and he faces his deadliest battle yet, fueled by love in a world where survival knows no rules.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-09-19',
+        '2026-12-01',
+        NULL),
+       ('War of the Worlds',
+        'PG-13',
+        'English',
+        129,
+        'https://www.youtube.com/watch?v=SM6aEEjc5hA',
+        'Will Radford is a top analyst for Homeland Security who tracks potential threats through a mass surveillance program, until one day an attack by an unknown entity leads him to question whether the government is hiding something from him... and from the rest of the world.',
+        'PUBLISHED',
+        8.4,
+        90,
+        '2026-08-19',
+        '2026-11-01',
+        NULL),
+       ('Inception',
         'PG-13',
         'English',
         148,
@@ -19,8 +178,8 @@ VALUES ('Inception',
         'PUBLISHED',
         8.8,
         87,
-        '2026-03-01',
-        '2026-04-15',
+        '2026-08-01',
+        '2026-09-15',
         NULL),
        ('The Dark Knight',
         'PG-13',
@@ -31,8 +190,8 @@ VALUES ('Inception',
         'DRAFT',
         9.0,
         94,
-        '2026-03-10',
-        '2026-05-01',
+        '2026-08-10',
+        '2026-12-01',
         NULL),
        ('Interstellar',
         'PG-13',
@@ -40,11 +199,11 @@ VALUES ('Inception',
         169,
         'https://youtube.com/watch?v=zSWdZVtXT7E',
         'A team travels through a wormhole in space to ensure humanity survival.',
-        'DRAFT',
+        'PUBLISHED',
         8.6,
         88,
-        '2026-04-01',
-        '2026-05-20',
+        '2026-09-01',
+        '2026-10-20',
         'BASIC_INFO'),
        ('Parasite',
         'R',
@@ -52,60 +211,117 @@ VALUES ('Inception',
         132,
         'https://youtube.com/watch?v=5xH0HfJHsaY',
         'A poor family schemes to become employed by a wealthy household.',
-        'ARCHIVED',
+        'PUBLISHED',
         8.5,
         77,
-        '2026-02-01',
-        '2026-03-01',
-        NULL),
-       ('Avengers: Endgame',
-        'PG-13',
-        'English',
-        181,
-        'https://youtube.com/watch?v=TcMBFSGVi1c',
-        'The Avengers assemble once more to reverse Thanos actions.',
-        'DRAFT',
-        8.4,
-        90,
-        '2026-03-15',
-        '2026-06-01',
-        NULL);
+        '2026-09-01',
+        '2026-11-01',
+        NULL)
+;
 
 INSERT INTO genres (name)
-VALUES ('Action');
-INSERT INTO genres (name)
-VALUES ('Sci-Fi');
-INSERT INTO genres (name)
-VALUES ('Thriller');
-INSERT INTO genres (name)
-VALUES ('Drama');
+VALUES ('Action'),
+       ('Adventure'),
+       ('Animation'),
+       ('Biography'),
+       ('Comedy'),
+       ('Crime'),
+       ('Documentary'),
+       ('Drama'),
+       ('Family'),
+       ('Fantasy'),
+       ('Film Noir'),
+       ('History'),
+       ('Horror'),
+       ('Music'),
+       ('Musical'),
+       ('Mystery'),
+       ('Romance'),
+       ('Science Fiction'),
+       ('Sport'),
+       ('Thriller'),
+       ('War'),
+       ('Western');
 
 INSERT INTO movies_genres (movie_id, genre_id)
-VALUES (1, 2);
-INSERT INTO movies_genres (movie_id, genre_id)
-VALUES (1, 3);
+VALUES
+-- Avengers: Endgame
+(1, 1),
+(1, 2),
+(1, 18),
+-- The Chase
+(2, 1),
+(2, 8),
+(2, 20),
+(2, 6),
+-- Black Phone 2
+(3, 8),
+(3, 20),
+(3, 6),
+(3, 13),
+-- Afterburn
+(4, 1),
+(4, 2),
+(4, 18),
+-- Chainsaw Man
+(5, 8),
+(5, 20),
+(5, 13),
+-- War of the Worlds
+(6, 8),
+(6, 20),
+(6, 13),
+-- Inception
+(7, 1),
+(7, 2),
+(7, 18),
+(7, 20),
+-- The Dark Knight
+(8, 1),
+(8, 8),
+(8, 20),
+(8, 6),
+-- Interstellar
+(9, 1),
+(9, 2),
+(9, 18),
+-- Parasite
+(10, 1),
+(10, 8),
+(10, 6);
 
-INSERT INTO movies_genres (movie_id, genre_id)
-VALUES (2, 1);
-INSERT INTO movies_genres (movie_id, genre_id)
-VALUES (2, 3);
-
-INSERT INTO movies_genres (movie_id, genre_id)
-VALUES (3, 2);
-INSERT INTO movies_genres (movie_id, genre_id)
-VALUES (3, 4);
-
 INSERT INTO photos (image_url, is_cover_photo, movie_id)
-VALUES ('inception_cover.jpg', true, 1);
-INSERT INTO photos (image_url, is_cover_photo, movie_id)
-VALUES ('inception_scene1.jpg', false, 1);
-
-INSERT INTO photos (image_url, is_cover_photo, movie_id)
-VALUES ('dark_knight_cover.jpg', true, 2);
-INSERT INTO photos (image_url, is_cover_photo, movie_id)
-VALUES ('dark_knight_scene1.jpg', false, 2);
-
-INSERT INTO photos (image_url, is_cover_photo, movie_id)
-VALUES ('interstellar_cover.jpg', true, 3);
-INSERT INTO photos (image_url, is_cover_photo, movie_id)
-VALUES ('interstellar_scene1.jpg', false, 3);
+VALUES -- avengers
+       ('https://ik.imagekit.io/4oxyrugmfe/avengers.jpg', true, 1),
+-- chase
+       ('https://image.tmdb.org/t/p/original/tLf5hjuO4gx62lVojPiHsIzCroh.jpg', true, 2),
+-- black phone 2
+       ('https://image.tmdb.org/t/p/original/foyiQu23zq4WhmffnQkFiNAvqcJ.jpg', true, 3),
+-- afterburn
+       ('https://image.tmdb.org/t/p/original/kHOfxq7cMTXyLbj0UmdoGhT540O.jpg', true, 4),
+--chainsaw
+       ('https://image.tmdb.org/t/p/original/kfXgo2rMF1A19celCwLyQ4Xwpf8.jpg', true, 5),
+-- war of the worlds
+       ('https://image.tmdb.org/t/p/original/iZLqwEwUViJdSkGVjePGhxYzbDb.jpg', true, 6),
+--inception
+       ('https://ik.imagekit.io/4oxyrugmfe/inception.webp', true, 7),
+-- dark knight
+       ('https://ik.imagekit.io/4oxyrugmfe/dark-knight.webp', true, 8),
+-- interstellar
+       ('https://ik.imagekit.io/4oxyrugmfe/interstellar.jpg', true, 9),
+-- parasite
+       ('https://ik.imagekit.io/4oxyrugmfe/parasite.webp', true, 10),
+-- afterburn
+       ('https://image.tmdb.org/t/p/original/kHOfxq7cMTXyLbj0UmdoGhT540O.jpg', true, 11),
+--chainsaw
+       ('https://image.tmdb.org/t/p/original/kfXgo2rMF1A19celCwLyQ4Xwpf8.jpg', true, 12),
+-- war of the worlds
+       ('https://image.tmdb.org/t/p/original/iZLqwEwUViJdSkGVjePGhxYzbDb.jpg', true, 13),
+--inception
+       ('https://ik.imagekit.io/4oxyrugmfe/inception.webp', true, 14),
+-- dark knight
+       ('https://ik.imagekit.io/4oxyrugmfe/dark-knight.webp', true, 15),
+-- interstellar
+       ('https://ik.imagekit.io/4oxyrugmfe/interstellar.jpg', true, 16),
+-- parasite
+       ('https://ik.imagekit.io/4oxyrugmfe/parasite.webp', false, 17);

@@ -26,7 +26,12 @@ public class MovieMapperImpl implements MovieMapper {
     List<String> genres = movie.getGenres().stream().map(Genre::getName).toList();
 
     return new MoviePreviewResponse(
-        movie.getName(), movie.getId(), movie.getDurationInMinutes(), coverPhotoUrl, genres);
+        movie.getName(),
+        movie.getId(),
+        movie.getDurationInMinutes(),
+        coverPhotoUrl,
+        movie.getSynopsis(),
+        genres);
   }
 
   @Override
