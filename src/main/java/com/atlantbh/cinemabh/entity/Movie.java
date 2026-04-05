@@ -84,4 +84,7 @@ public class Movie {
 
   @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
   private Set<Photo> photos = new HashSet<>();
+
+  @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
+  private Set<Projection> projections = new HashSet<>();
 }

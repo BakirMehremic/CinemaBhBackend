@@ -1,17 +1,17 @@
 package com.atlantbh.cinemabh.controller;
 
+import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
+import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
 import com.atlantbh.cinemabh.enums.MovieShowingStatus;
 import com.atlantbh.cinemabh.service.MovieService;
 import com.atlantbh.cinemabh.validator.PaginationValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,6 +31,24 @@ public class MovieController {
         movieService.getMoviesPreviewPaginated(pageNumber, pageSize, showingStatus);
 
     PaginatedResponse<MoviePreviewResponse> response = PaginatedResponse.from(movies);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/showing")
+  public ResponseEntity<PaginatedResponse<MovieShowingResponse>> filterShowingMovies(
+      @Valid FilterShowingMoviesRequest filter,
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(defaultValue = "9") int pageSize) {
+    paginationValidator.validate(pageNumber, pageSize);
+
+    // TODO add dto validation check if logic is valid for filters
+    // redo insert script
+    // clean app props
+
+    Page<MovieShowingResponse> showingMovies =
+        movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter);
+    PaginatedResponse<MovieShowingResponse> response = PaginatedResponse.from(showingMovies);
 
     return ResponseEntity.ok(response);
   }
