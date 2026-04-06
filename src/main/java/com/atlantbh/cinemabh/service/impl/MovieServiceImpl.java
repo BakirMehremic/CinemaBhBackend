@@ -10,8 +10,6 @@ import com.atlantbh.cinemabh.repository.MovieRepository;
 import com.atlantbh.cinemabh.service.MovieService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MovieServiceImpl implements MovieService {
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
-
-  private final Logger logger = LoggerFactory.getLogger(MovieServiceImpl.class);
 
   @Override
   @Transactional(readOnly = true)
@@ -56,8 +52,6 @@ public class MovieServiceImpl implements MovieService {
   public Page<MovieShowingResponse> filterShowingMoviesPaginated(
       int pageNumber, int pageSize, FilterShowingMoviesRequest filter) {
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
-    logger.warn(filter.toString());
-
     Page<Long> pagedIds =
         movieRepository.getShowingMovieIdsFilteredPaginated(
             pageable,
@@ -69,7 +63,6 @@ public class MovieServiceImpl implements MovieService {
             filter.genreId());
 
     if (pagedIds.isEmpty()) {
-      logger.warn(pagedIds.toString());
       return new PageImpl<>(List.of(), pageable, pagedIds.getTotalElements());
     }
 
