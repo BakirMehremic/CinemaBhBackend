@@ -35,14 +35,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
           + "JOIN h.venue v "
           + "JOIN v.city c "
           + "LEFT JOIN m.genres g "
-          + "WHERE CAST(:projectionDate AS date) IS NULL OR CAST(p.startTime as date)=:projectionDate "
-          + "AND CAST(:projectionTime as time) IS NULL OR CAST(p.startTime as time)=:projectionTime "
+          + "WHERE (CAST(:projectionDate AS date) IS NULL OR CAST(p.startTime as date)=:projectionDate) "
+          + "AND (CAST(:projectionTime as time) IS NULL OR CAST(p.startTime as time)=:projectionTime) "
           + "AND (:name='' OR :name IS NULL OR LOWER(m.name) LIKE ('%' || LOWER(:name) || '%'))"
           + "AND (:cityId IS NULL OR c.id=:cityId) "
           + "AND (:venueId IS NULL OR v.id=:venueId) "
           + "AND (:genreId IS NULL OR g.id=:genreId) "
           + "and CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate "
-          + "AND m.moviePublishedStatus=PUBLISHED ")
+          + "AND m.moviePublishedStatus=PUBLISHED "
+          + "GROUP BY m.id")
   Page<Long> getShowingMovieIdsFilteredPaginated(
       Pageable pageable,
       @Param("projectionDate") LocalDate projectionDate,

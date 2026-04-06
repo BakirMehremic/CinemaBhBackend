@@ -1,5 +1,5 @@
 INSERT INTO "halls" ("name", "venue_id")
-VALUES ('Hall 1', 1), ('Hall 2', 2);
+VALUES ('Hall 1', 1);
 
 INSERT INTO "projections" ("movie_id", "hall_id", "start_time", "end_time") VALUES
 (1, 1, '2026-10-15 10:00:00', '2026-10-15 12:45:00'),

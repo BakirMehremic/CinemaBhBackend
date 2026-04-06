@@ -42,10 +42,6 @@ public class MovieController {
       @RequestParam(defaultValue = "9") int pageSize) {
     paginationValidator.validate(pageNumber, pageSize);
 
-    // TODO add dto validation check if logic is valid for filters
-    // redo insert script
-    // clean app props
-
     Page<MovieShowingResponse> showingMovies =
         movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter);
     PaginatedResponse<MovieShowingResponse> response = PaginatedResponse.from(showingMovies);
