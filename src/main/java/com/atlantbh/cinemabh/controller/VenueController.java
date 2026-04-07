@@ -19,13 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/venues")
 public class VenueController {
   private final VenueService venueService;
-  private final PaginationValidator paginationValidator;
 
   @GetMapping("/preview")
   public ResponseEntity<PaginatedResponse<VenuePreviewResponse>> getVenuesPreview(
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "4") int pageSize) {
-    paginationValidator.validate(pageNumber, pageSize);
+    PaginationValidator.validate(pageNumber, pageSize);
 
     Page<VenuePreviewResponse> venues =
         venueService.getVenuePreviewsPaginated(pageNumber, pageSize);

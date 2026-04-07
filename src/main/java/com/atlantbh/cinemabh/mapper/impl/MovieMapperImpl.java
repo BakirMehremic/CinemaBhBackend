@@ -10,6 +10,7 @@ import com.atlantbh.cinemabh.mapper.MovieMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,15 +49,12 @@ public class MovieMapperImpl implements MovieMapper {
 
     List<String> genres = getGenreNames(movie);
 
-    List<LocalTime> projectionTimes =
-        movie.getProjections().stream()
-            .map(Projection::getStartTime)
-            .map(LocalDateTime::toLocalTime)
-            .toList();
+    List<LocalTime> projectionTimes = new ArrayList<>();
 
-    LocalDate lastProjectionTime =
+    LocalDate lastProjectionDate =
         movie.getProjections().stream()
             .map(Projection::getStartTime)
+            .peek(dt -> projectionTimes.add(dt.toLocalTime()))
             .max(LocalDateTime::compareTo)
             .map(LocalDateTime::toLocalDate)
             .orElse(null);
@@ -70,7 +68,7 @@ public class MovieMapperImpl implements MovieMapper {
         movie.getDurationInMinutes(),
         genres,
         projectionTimes,
-        lastProjectionTime);
+        lastProjectionDate);
   }
 
   @Override

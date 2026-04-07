@@ -18,14 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/movies")
 public class MovieController {
   private final MovieService movieService;
-  private final PaginationValidator paginationValidator;
 
   @GetMapping("/preview")
   public ResponseEntity<PaginatedResponse<MoviePreviewResponse>> getMoviesPreview(
       @RequestParam(defaultValue = "SHOWING") MovieShowingStatus showingStatus,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "4") int pageSize) {
-    paginationValidator.validate(pageNumber, pageSize);
+    PaginationValidator.validate(pageNumber, pageSize);
 
     Page<MoviePreviewResponse> movies =
         movieService.getMoviesPreviewPaginated(pageNumber, pageSize, showingStatus);
@@ -40,7 +39,7 @@ public class MovieController {
       @Valid FilterShowingMoviesRequest filter,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "9") int pageSize) {
-    paginationValidator.validate(pageNumber, pageSize);
+    PaginationValidator.validate(pageNumber, pageSize);
 
     Page<MovieShowingResponse> showingMovies =
         movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter);
