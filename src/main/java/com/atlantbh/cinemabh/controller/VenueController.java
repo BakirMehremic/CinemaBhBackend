@@ -1,9 +1,8 @@
 package com.atlantbh.cinemabh.controller;
 
-import com.atlantbh.cinemabh.dto.response.NameIdPair;
-import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
-import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
+import com.atlantbh.cinemabh.dto.response.*;
 import com.atlantbh.cinemabh.service.VenueService;
+import com.atlantbh.cinemabh.validator.IdValidator;
 import com.atlantbh.cinemabh.validator.PaginationValidator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +37,29 @@ public class VenueController {
   public ResponseEntity<List<NameIdPair>> getVenuesNameIdPairs(
       @RequestParam(required = false) Integer cityId) {
     List<NameIdPair> response = venueService.getAllVenueNameIdPairs(cityId);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/basic")
+  public ResponseEntity<PaginatedResponse<VenueBasicInfoResponse>> getVenuesBasicInfo(
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(defaultValue = "4") int pageSize,
+      @RequestParam(required = false) Integer cityId) {
+    PaginationValidator.validate(pageNumber, pageSize);
+    IdValidator.validateIdNullOrPositive(cityId);
+
+    Page<VenueBasicInfoResponse> venues =
+        venueService.getVenuesBasicInfoPaginated(pageNumber, pageSize, cityId);
+
+    PaginatedResponse<VenueBasicInfoResponse> response = PaginatedResponse.from(venues);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/details")
+  public ResponseEntity<VenueDetailsResponse> getVenueDetailsById(@RequestParam int venueId) {
+    IdValidator.validateIdPositive(venueId);
+
+    VenueDetailsResponse response = venueService.getVenueDetailsById(venueId);
     return ResponseEntity.ok(response);
   }
 }
