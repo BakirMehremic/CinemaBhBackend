@@ -35,8 +35,9 @@ public class VenueController {
   }
 
   @GetMapping("/names")
-  public ResponseEntity<List<NameIdPair>> getVenuesNameIdPairs() {
-    List<NameIdPair> response = venueService.getAllVenueNameIdPairs();
+  public ResponseEntity<List<NameIdPair>> getVenuesNameIdPairs(
+      @RequestParam(required = false) Integer cityId) {
+    List<NameIdPair> response = venueService.getAllVenueNameIdPairs(cityId);
     return ResponseEntity.ok(response);
   }
 }

@@ -8,5 +8,5 @@ import org.springframework.data.domain.Page;
 public interface VenueService {
   Page<VenuePreviewResponse> getVenuePreviewsPaginated(int pageNumber, int pageSize);
 
-  List<NameIdPair> getAllVenueNameIdPairs();
+  List<NameIdPair> getAllVenueNameIdPairs(Integer cityId);
 }

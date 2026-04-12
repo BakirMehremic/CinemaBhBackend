@@ -7,6 +7,7 @@ import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.entity.Photo;
 import com.atlantbh.cinemabh.entity.Projection;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
+import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -14,10 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class MovieMapperImpl implements MovieMapper {
+  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final Logger logger = LoggerFactory.getLogger(MovieMapperImpl.class);
 
   @Override
   public MoviePreviewResponse toPreviewResponse(Movie movie) {
@@ -77,6 +86,56 @@ public class MovieMapperImpl implements MovieMapper {
         movies.stream().collect(Collectors.toMap(Movie::getId, movie -> movie));
 
     return ids.stream().map(id -> this.toShowingResponse(movieMap.get(id))).toList();
+  }
+
+  @Override
+  public Page<MovieShowingResponse> toShowingResponseList(
+      Page<MovieShowingProjection> projections) {
+    return projections.map(
+        p ->
+            new MovieShowingResponse(
+                p.getId(),
+                p.getName(),
+                p.getImageUrl(),
+                p.getPgRating(),
+                p.getLanguage(),
+                p.getDurationMinutes(),
+                parseGenres(p.getGenres()),
+                parseLocalTimes(p.getStartTimes()),
+                p.getEndShowingDate()));
+  }
+
+  private List<LocalTime> parseLocalTimes(List<String> times) {
+    if (times == null || times.isEmpty()) {
+      return List.of();
+    }
+
+    return times.stream()
+        .flatMap(
+            t -> {
+              try {
+                List<LocalTime> timeList =
+                    objectMapper.readValue(t, new TypeReference<List<LocalTime>>() {});
+                return timeList.stream();
+              } catch (Exception e) {
+                logger.warn("Failed to parse time: {}", t);
+                return Stream.empty();
+              }
+            })
+        .toList();
+  }
+
+  private List<String> parseGenres(List<String> genres) {
+    if (genres == null || genres.isEmpty()) {
+      return List.of();
+    }
+
+    try {
+      return objectMapper.readValue(genres.getFirst(), new TypeReference<List<String>>() {});
+    } catch (Exception e) {
+      logger.warn("Failed to parse genres {}", genres);
+      return List.of();
+    }
   }
 
   private String getCoverPhotoUrl(Movie movie) {

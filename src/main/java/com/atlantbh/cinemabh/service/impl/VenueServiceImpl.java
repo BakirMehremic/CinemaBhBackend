@@ -41,7 +41,7 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<NameIdPair> getAllVenueNameIdPairs() {
-    return venueRepository.getAllVenueNameIdPairs();
+  public List<NameIdPair> getAllVenueNameIdPairs(Integer cityId) {
+    return venueRepository.getAllVenueNameIdPairs(cityId);
   }
 }

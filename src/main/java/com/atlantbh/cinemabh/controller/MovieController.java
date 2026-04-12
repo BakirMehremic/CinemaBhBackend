@@ -41,9 +41,10 @@ public class MovieController {
       @RequestParam(defaultValue = "9") int pageSize) {
     PaginationValidator.validate(pageNumber, pageSize);
 
-    Page<MovieShowingResponse> showingMovies =
+    Page<MovieShowingResponse> filteredMovies =
         movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter);
-    PaginatedResponse<MovieShowingResponse> response = PaginatedResponse.from(showingMovies);
+
+    PaginatedResponse<MovieShowingResponse> response = PaginatedResponse.from(filteredMovies);
 
     return ResponseEntity.ok(response);
   }

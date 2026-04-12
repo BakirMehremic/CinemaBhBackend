@@ -6,6 +6,7 @@ import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.enums.MovieShowingStatus;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
+import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
 import com.atlantbh.cinemabh.service.MovieService;
 import java.util.List;
@@ -51,10 +52,9 @@ public class MovieServiceImpl implements MovieService {
   @Transactional(readOnly = true)
   public Page<MovieShowingResponse> filterShowingMoviesPaginated(
       int pageNumber, int pageSize, FilterShowingMoviesRequest filter) {
-    Pageable pageable = PageRequest.of(pageNumber, pageSize);
-    Page<Long> pagedIds =
-        movieRepository.getShowingMovieIdsFilteredPaginated(
-            pageable,
+    Page<MovieShowingProjection> projections =
+        movieRepository.filterShowingMoviesPaginated(
+            PageRequest.of(pageNumber, pageSize),
             filter.projectionDate(),
             filter.projectionTime(),
             filter.name(),
@@ -62,16 +62,6 @@ public class MovieServiceImpl implements MovieService {
             filter.venueId(),
             filter.genreId());
 
-    if (pagedIds.isEmpty()) {
-      return new PageImpl<>(List.of(), pageable, pagedIds.getTotalElements());
-    }
-
-    List<Movie> movies =
-        movieRepository.getMoviesWithGenresProjectionsPhotosByIds(pagedIds.getContent());
-
-    List<MovieShowingResponse> content =
-        movieMapper.toShowingResponseList(pagedIds.getContent(), movies);
-
-    return new PageImpl<>(content, pageable, pagedIds.getTotalElements());
+    return movieMapper.toShowingResponseList(projections);
   }
 }
