@@ -12,4 +12,7 @@ public interface MovieService {
 
   Page<MovieShowingResponse> filterShowingMoviesPaginated(
       int pageNumber, int pageSize, FilterShowingMoviesRequest filter);
+
+  Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
+      int pageNumber, int pageSize, int venueId);
 }

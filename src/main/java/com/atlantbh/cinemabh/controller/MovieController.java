@@ -48,4 +48,14 @@ public class MovieController {
 
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("/showing/venue")
+  public ResponseEntity<PaginatedResponse<MoviePreviewResponse>> getMoviesByVenueIdPaginated(
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(defaultValue = "9") int pageSize,
+      @RequestParam int venueId) {
+    Page<MoviePreviewResponse> responses =
+        movieService.getMoviePreviewsPaginatedByVenueId(pageNumber, pageSize, venueId);
+    return ResponseEntity.ok(PaginatedResponse.from(responses));
+  }
 }

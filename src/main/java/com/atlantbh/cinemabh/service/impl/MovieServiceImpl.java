@@ -64,4 +64,14 @@ public class MovieServiceImpl implements MovieService {
 
     return movieMapper.toShowingResponseList(projections);
   }
+
+  @Override
+  public Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
+      int pageNumber, int pageSize, int venueId) {
+    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+    Page<Movie> movies = movieRepository.getMoviesShowingPreviewsByVenueId(pageable, venueId);
+
+    return movies.map(movieMapper::toPreviewResponse);
+  }
 }

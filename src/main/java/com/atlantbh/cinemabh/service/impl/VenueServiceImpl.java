@@ -1,12 +1,12 @@
 package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.dto.response.NameIdPair;
-import com.atlantbh.cinemabh.dto.response.VenueBasicInfoResponse;
-import com.atlantbh.cinemabh.dto.response.VenueDetailsResponse;
 import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
 import com.atlantbh.cinemabh.entity.Venue;
 import com.atlantbh.cinemabh.exception.NotFoundException;
 import com.atlantbh.cinemabh.mapper.VenueMapper;
+import com.atlantbh.cinemabh.projection.VenueBasicInfoProjection;
+import com.atlantbh.cinemabh.projection.VenueDetailsProjection;
 import com.atlantbh.cinemabh.repository.VenueRepository;
 import com.atlantbh.cinemabh.service.VenueService;
 import java.util.List;
@@ -50,33 +50,18 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<VenueBasicInfoResponse> getVenuesBasicInfoPaginated(
-      int pageNumber, int pageSize, Integer cityId) {
+  public Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
+      int pageNumber, int pageSize, Integer cityId, String name) {
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-    return venueRepository
-        .getVenuesBasicInfoPaginated(pageable, cityId)
-        .map(
-            projection ->
-                new VenueBasicInfoResponse(
-                    projection.getId(), projection.getName(), projection.getImageUrl()));
+    return venueRepository.getVenuesBasicInfoPaginated(pageable, cityId, name);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public VenueDetailsResponse getVenueDetailsById(Integer cityId) {
+  public VenueDetailsProjection getVenueDetailsById(Integer cityId) {
     return venueRepository
         .getVenueDetailsById(cityId)
-        .map(
-            projection ->
-                new VenueDetailsResponse(
-                    projection.getId(),
-                    projection.getName(),
-                    projection.getStreet(),
-                    projection.getStreetNumber(),
-                    projection.getPhone(),
-                    projection.getImageUrl(),
-                    projection.getCityName()))
-        .orElseThrow(() -> new NotFoundException("Venue not found with id: " + cityId));
+        .orElseThrow(() -> new NotFoundException("Venue not found with city id: " + cityId));
   }
 }

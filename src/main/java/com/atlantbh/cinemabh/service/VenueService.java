@@ -1,9 +1,9 @@
 package com.atlantbh.cinemabh.service;
 
 import com.atlantbh.cinemabh.dto.response.NameIdPair;
-import com.atlantbh.cinemabh.dto.response.VenueBasicInfoResponse;
-import com.atlantbh.cinemabh.dto.response.VenueDetailsResponse;
 import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
+import com.atlantbh.cinemabh.projection.VenueBasicInfoProjection;
+import com.atlantbh.cinemabh.projection.VenueDetailsProjection;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -12,8 +12,8 @@ public interface VenueService {
 
   List<NameIdPair> getAllVenueNameIdPairs(Integer cityId);
 
-  Page<VenueBasicInfoResponse> getVenuesBasicInfoPaginated(
-      int pageNumber, int pageSize, Integer cityId);
+  Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
+      int pageNumber, int pageSize, Integer cityId, String name);
 
-  VenueDetailsResponse getVenueDetailsById(Integer cityId);
+  VenueDetailsProjection getVenueDetailsById(Integer cityId);
 }

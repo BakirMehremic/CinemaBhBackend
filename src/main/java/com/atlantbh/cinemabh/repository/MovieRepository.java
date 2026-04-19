@@ -77,4 +77,19 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
       @Param("cityId") Long cityId,
       @Param("venueId") Long venueId,
       @Param("genreId") Long genreId);
+
+  // TODO rewrite dont forget to add status = published
+  @Query(
+"""
+  SELECT DISTINCT m
+  FROM Movie m
+  JOIN m.projections p
+  JOIN p.hall h
+  JOIN h.venue v
+  WHERE v.id = :venueId
+  AND CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate
+  AND m.moviePublishedStatus=PUBLISHED
+""")
+  Page<Movie> getMoviesShowingPreviewsByVenueId(
+      Pageable pageable, @Param("venueId") Integer venueId);
 }
