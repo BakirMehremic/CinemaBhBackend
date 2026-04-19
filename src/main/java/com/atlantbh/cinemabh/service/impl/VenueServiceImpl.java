@@ -3,7 +3,10 @@ package com.atlantbh.cinemabh.service.impl;
 import com.atlantbh.cinemabh.dto.response.NameIdPair;
 import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
 import com.atlantbh.cinemabh.entity.Venue;
+import com.atlantbh.cinemabh.exception.NotFoundException;
 import com.atlantbh.cinemabh.mapper.VenueMapper;
+import com.atlantbh.cinemabh.projection.VenueBasicInfoProjection;
+import com.atlantbh.cinemabh.projection.VenueDetailsProjection;
 import com.atlantbh.cinemabh.repository.VenueRepository;
 import com.atlantbh.cinemabh.service.VenueService;
 import java.util.List;
@@ -41,7 +44,24 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<NameIdPair> getAllVenueNameIdPairs() {
-    return venueRepository.getAllVenueNameIdPairs();
+  public List<NameIdPair> getAllVenueNameIdPairs(Integer cityId) {
+    return venueRepository.getAllVenueNameIdPairs(cityId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
+      int pageNumber, int pageSize, Integer cityId, String name) {
+    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+    return venueRepository.getVenuesBasicInfoPaginated(pageable, cityId, name);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public VenueDetailsProjection getVenueDetailsById(Integer cityId) {
+    return venueRepository
+        .getVenueDetailsById(cityId)
+        .orElseThrow(() -> new NotFoundException("Venue not found with city id: " + cityId));
   }
 }
