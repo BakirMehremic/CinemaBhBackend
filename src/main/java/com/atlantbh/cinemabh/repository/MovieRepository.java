@@ -90,6 +90,5 @@ WHERE v.id = :venueId
 AND CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate
 AND m.moviePublishedStatus=PUBLISHED
 """)
-  Page<Movie> getMoviesShowingPreviewsByVenueId(
-      Pageable pageable, @Param("venueId") Integer venueId);
+  Page<Movie> getMoviesShowingPreviewsByVenueId(Pageable pageable, @Param("venueId") long venueId);
 }

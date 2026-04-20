@@ -20,16 +20,14 @@ public class ProjectionController {
   @GetMapping("/showing/times")
   public ResponseEntity<List<String>> getShowingMoviesProjectionTimes(
       @RequestParam(required = false) String movieName,
-      @RequestParam(required = false) Integer cityId,
-      @RequestParam(required = false) Integer venueId,
-      @RequestParam(required = false) Integer genreId,
+      @RequestParam(required = false) Long cityId,
+      @RequestParam(required = false) Long venueId,
+      @RequestParam(required = false) Long genreId,
       @RequestParam(required = false) LocalDate date) {
     IdValidator.validateIdNullOrPositive(cityId, venueId, genreId);
 
-    List<String> projectionTimes =
+    return ResponseEntity.ok(
         projectionService.getShowingMoviesProjectionTimes(
-            movieName, cityId, venueId, genreId, date);
-
-    return ResponseEntity.ok(projectionTimes);
+            movieName, cityId, venueId, genreId, date));
   }
 }

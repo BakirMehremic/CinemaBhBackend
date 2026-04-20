@@ -26,7 +26,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
   @Query(
       "SELECT new com.atlantbh.cinemabh.dto.response.NameIdPair(v.name, v.id) FROM Venue v "
           + "WHERE (:cityId IS NULL OR v.city.id=:cityId)")
-  List<NameIdPair> getAllVenueNameIdPairs(@Param("cityId") Integer cityId);
+  List<NameIdPair> getAllVenueNameIdPairs(@Param("cityId") Long cityId);
 
   @Query(
 """
@@ -36,7 +36,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
      AND (:name='' OR :name IS NULL OR LOWER(v.name) LIKE CONCAT('%', LOWER(:name), '%') ESCAPE '\\')
 """)
   Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
-      Pageable pageable, @Param("cityId") Integer cityId, @Param("name") String name);
+      Pageable pageable, @Param("cityId") Long cityId, @Param("name") String name);
 
   @Query(
 """
@@ -47,5 +47,5 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     JOIN v.city c
     WHERE v.id = :venueId
 """)
-  Optional<VenueDetailsProjection> getVenueDetailsById(@Param("venueId") Integer venueId);
+  Optional<VenueDetailsProjection> getVenueDetailsById(@Param("venueId") long venueId);
 }

@@ -10,10 +10,10 @@ import org.springframework.data.domain.Page;
 public interface VenueService {
   Page<VenuePreviewResponse> getVenuePreviewsPaginated(int pageNumber, int pageSize);
 
-  List<NameIdPair> getAllVenueNameIdPairs(Integer cityId);
+  List<NameIdPair> getAllVenueNameIdPairs(Long cityId);
 
   Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
-      int pageNumber, int pageSize, Integer cityId, String name);
+      int pageNumber, int pageSize, Long cityId, String name);
 
-  VenueDetailsProjection getVenueDetailsById(Integer cityId);
+  VenueDetailsProjection getVenueDetailsById(long venueId);
 }

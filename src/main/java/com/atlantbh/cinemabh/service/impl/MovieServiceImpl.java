@@ -67,7 +67,7 @@ public class MovieServiceImpl implements MovieService {
 
   @Override
   public Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
-      int pageNumber, int pageSize, int venueId) {
+      int pageNumber, int pageSize, long venueId) {
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
     Page<Movie> movies = movieRepository.getMoviesShowingPreviewsByVenueId(pageable, venueId);

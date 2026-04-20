@@ -17,11 +17,7 @@ public class ProjectionServiceImpl implements ProjectionService {
   @Override
   @Transactional(readOnly = true)
   public List<String> getShowingMoviesProjectionTimes(
-      String movieName,
-      Integer cityId,
-      Integer venueId,
-      Integer genreId,
-      LocalDate date) {
+      String movieName, Long cityId, Long venueId, Long genreId, LocalDate date) {
     List<LocalTime> projectionTimes =
         projectionRepository.getShowingMoviesProjectionTimes(
             movieName, cityId, venueId, genreId, date);

@@ -44,14 +44,14 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<NameIdPair> getAllVenueNameIdPairs(Integer cityId) {
+  public List<NameIdPair> getAllVenueNameIdPairs(Long cityId) {
     return venueRepository.getAllVenueNameIdPairs(cityId);
   }
 
   @Override
   @Transactional(readOnly = true)
   public Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
-      int pageNumber, int pageSize, Integer cityId, String name) {
+      int pageNumber, int pageSize, Long cityId, String name) {
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
     return venueRepository.getVenuesBasicInfoPaginated(pageable, cityId, name);
@@ -59,9 +59,9 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public VenueDetailsProjection getVenueDetailsById(Integer cityId) {
+  public VenueDetailsProjection getVenueDetailsById(long venueId) {
     return venueRepository
-        .getVenueDetailsById(cityId)
-        .orElseThrow(() -> new NotFoundException("Venue not found with city id: " + cityId));
+        .getVenueDetailsById(venueId)
+        .orElseThrow(() -> new NotFoundException("Venue not found with city id: " + venueId));
   }
 }

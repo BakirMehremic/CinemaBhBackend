@@ -12,7 +12,13 @@ public class IdValidator {
     }
   }
 
-  public static void validateIdNullOrPositive(Integer... ids) {
+  public static void validateIdPositive(long... ids) {
+    if (Arrays.stream(ids).anyMatch(id -> id < 1)) {
+      throw new InvalidRequestException("Id must be positive");
+    }
+  }
+
+  public static void validateIdNullOrPositive(Long... ids) {
     if (Arrays.stream(ids).anyMatch(id -> id != null && id < 1)) {
       throw new InvalidRequestException("Id must be null or positive");
     }

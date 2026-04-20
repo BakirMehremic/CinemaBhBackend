@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/genres")
 public class GenreController {
-    private final GenreService genreService;
+  private final GenreService genreService;
 
-    @GetMapping("/names")
-    public ResponseEntity<List<NameIdPair>> getAllGenreNameIdPairs(){
-        List<NameIdPair> response = genreService.getAllGenreNameIdPairs();
-        return ResponseEntity.ok(response);
-    }
+  @GetMapping("/names")
+  public ResponseEntity<List<NameIdPair>> getAllGenreNameIdPairs() {
+    return ResponseEntity.ok(genreService.getAllGenreNameIdPairs());
+  }
 }

@@ -33,8 +33,8 @@ public interface ProjectionRepository extends JpaRepository<Projection, Long> {
 """)
   List<LocalTime> getShowingMoviesProjectionTimes(
       @Param("movieName") String movieName,
-      @Param("cityId") Integer cityId,
-      @Param("venueId") Integer venueId,
-      @Param("genreId") Integer genreId,
+      @Param("cityId") Long cityId,
+      @Param("venueId") Long venueId,
+      @Param("genreId") Long genreId,
       @Param("date") LocalDate date);
 }

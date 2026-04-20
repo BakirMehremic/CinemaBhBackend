@@ -17,7 +17,6 @@ public class CityController {
 
   @GetMapping("/names")
   public ResponseEntity<List<NameIdPair>> getCityNameIdPairs() {
-    List<NameIdPair> response = cityService.getAllCityNameIdPairs();
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(cityService.getAllCityNameIdPairs());
   }
 }

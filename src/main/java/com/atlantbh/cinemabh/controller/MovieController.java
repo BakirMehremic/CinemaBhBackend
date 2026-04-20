@@ -6,10 +6,10 @@ import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
 import com.atlantbh.cinemabh.enums.MovieShowingStatus;
 import com.atlantbh.cinemabh.service.MovieService;
+import com.atlantbh.cinemabh.validator.IdValidator;
 import com.atlantbh.cinemabh.validator.PaginationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +26,9 @@ public class MovieController {
       @RequestParam(defaultValue = "4") int pageSize) {
     PaginationValidator.validate(pageNumber, pageSize);
 
-    Page<MoviePreviewResponse> movies =
-        movieService.getMoviesPreviewPaginated(pageNumber, pageSize, showingStatus);
-
-    PaginatedResponse<MoviePreviewResponse> response = PaginatedResponse.from(movies);
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(
+        PaginatedResponse.from(
+            movieService.getMoviesPreviewPaginated(pageNumber, pageSize, showingStatus)));
   }
 
   @GetMapping("/showing")
@@ -41,21 +38,21 @@ public class MovieController {
       @RequestParam(defaultValue = "9") int pageSize) {
     PaginationValidator.validate(pageNumber, pageSize);
 
-    Page<MovieShowingResponse> filteredMovies =
-        movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter);
-
-    PaginatedResponse<MovieShowingResponse> response = PaginatedResponse.from(filteredMovies);
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(
+        PaginatedResponse.from(
+            movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter)));
   }
 
   @GetMapping("/showing/venue")
   public ResponseEntity<PaginatedResponse<MoviePreviewResponse>> getMoviesByVenueIdPaginated(
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "9") int pageSize,
-      @RequestParam int venueId) {
-    Page<MoviePreviewResponse> responses =
-        movieService.getMoviePreviewsPaginatedByVenueId(pageNumber, pageSize, venueId);
-    return ResponseEntity.ok(PaginatedResponse.from(responses));
+      @RequestParam long venueId) {
+    PaginationValidator.validate(pageNumber, pageSize);
+    IdValidator.validateIdPositive(venueId);
+
+    return ResponseEntity.ok(
+        PaginatedResponse.from(
+            movieService.getMoviePreviewsPaginatedByVenueId(pageNumber, pageSize, venueId)));
   }
 }

@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface ProjectionService {
   List<String> getShowingMoviesProjectionTimes(
-      String movieName, Integer cityId, Integer venueId, Integer genreId, LocalDate date);
+      String movieName, Long cityId, Long venueId, Long genreId, LocalDate date);
 }
