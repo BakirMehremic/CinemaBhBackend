@@ -46,7 +46,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
         JOIN venues v
         ON v.id = h.venue_id
         WHERE
-              (CAST(:projectionDate AS date) IS NULL OR DATE(pr.start_time) = CAST(:projectionDate AS date) )
+                (CAST(:projectionDate AS date) IS NULL OR
+                    pr.start_time >= CAST(:projectionDate as date) AND pr.start_time < CAST(:projectionDate AS date) + INTERVAL '1 day' )
                 AND (CAST(:projectionTime AS time) IS NULL OR pr.start_time::time = CAST(:projectionTime AS time) )
                 AND (:cityId IS NULL OR v.city_id = :cityId)
                 AND (:venueId IS NULL OR v.id = :venueId)
@@ -55,7 +56,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     ON prj.movie_id = m.id
     LEFT JOIN (
         SELECT mg.movie_id,
-               json_agg(g.name ORDER BY g.name) as genres
+               array_agg(g.name ORDER BY g.name) as genres
         FROM movies_genres mg
         JOIN genres g ON g.id=mg.genre_id
         GROUP BY mg.movie_id
@@ -78,17 +79,16 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
       @Param("venueId") Long venueId,
       @Param("genreId") Long genreId);
 
-  // TODO rewrite dont forget to add status = published
   @Query(
 """
-  SELECT DISTINCT m
-  FROM Movie m
-  JOIN m.projections p
-  JOIN p.hall h
-  JOIN h.venue v
-  WHERE v.id = :venueId
-  AND CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate
-  AND m.moviePublishedStatus=PUBLISHED
+SELECT DISTINCT m
+FROM Movie m
+JOIN m.projections p
+JOIN p.hall h
+JOIN h.venue v
+WHERE v.id = :venueId
+AND CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate
+AND m.moviePublishedStatus=PUBLISHED
 """)
   Page<Movie> getMoviesShowingPreviewsByVenueId(
       Pageable pageable, @Param("venueId") Integer venueId);

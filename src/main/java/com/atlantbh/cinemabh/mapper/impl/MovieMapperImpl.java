@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,8 +24,12 @@ import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class MovieMapperImpl implements MovieMapper {
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper;
   private final Logger logger = LoggerFactory.getLogger(MovieMapperImpl.class);
+
+  public MovieMapperImpl(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
 
   @Override
   public MoviePreviewResponse toPreviewResponse(Movie movie) {
@@ -100,7 +103,7 @@ public class MovieMapperImpl implements MovieMapper {
                 p.getPgRating(),
                 p.getLanguage(),
                 p.getDurationMinutes(),
-                parseGenres(p.getGenres()),
+                p.getGenres(),
                 parseLocalTimes(p.getStartTimes()),
                 p.getEndShowingDate()));
   }
@@ -113,29 +116,11 @@ public class MovieMapperImpl implements MovieMapper {
     return times.stream()
         .flatMap(
             t -> {
-              try {
-                List<LocalTime> timeList =
-                    objectMapper.readValue(t, new TypeReference<List<LocalTime>>() {});
-                return timeList.stream();
-              } catch (Exception e) {
-                logger.warn("Failed to parse time: {}", t);
-                return Stream.empty();
-              }
+              List<LocalTime> timeList =
+                  objectMapper.readValue(t, new TypeReference<List<LocalTime>>() {});
+              return timeList.stream();
             })
         .toList();
-  }
-
-  private List<String> parseGenres(List<String> genres) {
-    if (genres == null || genres.isEmpty()) {
-      return List.of();
-    }
-
-    try {
-      return objectMapper.readValue(genres.getFirst(), new TypeReference<List<String>>() {});
-    } catch (Exception e) {
-      logger.warn("Failed to parse genres {}", genres);
-      return List.of();
-    }
   }
 
   private String getCoverPhotoUrl(Movie movie) {
