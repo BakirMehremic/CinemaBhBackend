@@ -1,14 +1,14 @@
 package com.atlantbh.cinemabh.validator;
 
 import com.atlantbh.cinemabh.exception.InvalidPaginationException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PaginationValidator {
 
   private static final int MAX_PAGE_SIZE = 100;
 
-  public void validate(int pageNumber, int pageSize) {
+  private PaginationValidator() {}
+
+  public static void validate(int pageNumber, int pageSize) {
     if (pageNumber < 0) {
       throw new InvalidPaginationException("pageNumber must be >= 0");
     }
