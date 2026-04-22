@@ -80,9 +80,9 @@ public class MovieServiceImpl implements MovieService {
   @Override
   @Transactional(readOnly = true)
   public Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(
-      int pageNumber, int pageSize, FilterUpcomingMoviesRequest filter) {
+      FilterUpcomingMoviesRequest filter) {
     return movieRepository.filterUpcomingMoviesPaginated(
-        PageRequest.of(pageNumber, pageSize),
+        PageRequest.of(filter.pageNumber(), filter.pageSize()),
         filter.startShowingDateFrom(),
         filter.startShowingDateTo(),
         filter.name(),

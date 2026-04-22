@@ -18,6 +18,5 @@ public interface MovieService {
   Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
       int pageNumber, int pageSize, long venueId);
 
-  Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(
-      int pageNumber, int pageSize, FilterUpcomingMoviesRequest filter);
+  Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(FilterUpcomingMoviesRequest filter);
 }
