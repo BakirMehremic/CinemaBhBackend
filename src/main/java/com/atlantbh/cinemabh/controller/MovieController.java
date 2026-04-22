@@ -2,6 +2,7 @@ package com.atlantbh.cinemabh.controller;
 
 import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
 import com.atlantbh.cinemabh.dto.request.FilterUpcomingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.PaginationRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
@@ -60,13 +61,11 @@ public class MovieController {
 
   @GetMapping("/upcoming")
   public ResponseEntity<PaginatedResponse<MovieUpcomingProjection>> filterUpcomingMoviesPaginated(
-      @Valid FilterUpcomingMoviesRequest filter,
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "9") int pageSize) {
-    PaginationValidator.validate(pageNumber, pageSize);
+      @Valid FilterUpcomingMoviesRequest filter, @Valid PaginationRequest paginationRequest) {
 
     return ResponseEntity.ok(
         PaginatedResponse.from(
-            movieService.filterUpcomingMoviesPaginated(pageNumber, pageSize, filter)));
+            movieService.filterUpcomingMoviesPaginated(
+                paginationRequest.pageNumber(), paginationRequest.pageSize(), filter)));
   }
 }
