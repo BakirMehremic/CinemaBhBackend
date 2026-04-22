@@ -8,11 +8,11 @@ public interface MovieUpcomingProjection {
 
   String getName();
 
-  int getDurationMinutes();
+  int getDuration();
 
   LocalDate getOpensDate();
 
-  String getImageUrl();
+  String getCoverPhotoUrl();
 
   List<String> getGenres();
 }

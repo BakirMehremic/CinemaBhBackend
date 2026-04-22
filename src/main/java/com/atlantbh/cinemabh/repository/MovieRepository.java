@@ -96,17 +96,11 @@ AND m.moviePublishedStatus=PUBLISHED
   @Query(
       value =
 """
-    SELECT m.id, m.name, m.duration_minutes as durationMinutes,
-     p.image_url as imageUrl, gen.genres, m.start_showing_date as opensDate
+    SELECT m.id, m.name, m.duration_minutes as duration,
+     p.image_url as coverPhotoUrl, gen.genres, m.start_showing_date as opensDate
     FROM movies m
     JOIN photos p
     ON p.movie_id=m.id AND p.is_cover_photo=true
-    JOIN projections pr
-    ON pr.movie_id=m.id
-    JOIN halls h
-    ON h.id = pr.hall_id
-    JOIN venues v
-    ON v.id = h.venue_id
     LEFT JOIN (
         SELECT mg.movie_id,
                array_agg(g.name ORDER BY g.name) as genres
@@ -117,9 +111,15 @@ AND m.moviePublishedStatus=PUBLISHED
     ON gen.movie_id = m.id
     WHERE m.status='PUBLISHED'
     AND CURRENT_DATE < m.start_showing_date
+      AND EXISTS (
+          SELECT 1 FROM projections pr
+          JOIN halls h ON h.id = pr.hall_id
+          JOIN venues v ON v.id = h.venue_id
+          WHERE pr.movie_id = m.id
+          AND (:cityId IS NULL OR v.city_id = :cityId)
+          AND (:venueId IS NULL OR v.id = :venueId)
+      )
     AND (:name='' OR :name IS NULL OR LOWER(m.name) LIKE CONCAT('%', LOWER(:name), '%') ESCAPE '\\')
-    AND (:cityId IS NULL OR v.city_id = :cityId)
-    AND (:venueId IS NULL OR v.id = :venueId)
     AND (CAST(:startShowingDateFrom AS date) IS NULL OR m.start_showing_date >= CAST(:startShowingDateFrom AS date))
     AND (CAST(:startShowingDateTo AS date) IS NULL OR m.start_showing_date <= CAST(:startShowingDateTo AS date))
     AND (:genreId IS NULL OR m.id IN (
