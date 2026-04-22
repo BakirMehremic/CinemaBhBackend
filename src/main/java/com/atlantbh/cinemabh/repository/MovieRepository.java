@@ -2,6 +2,7 @@ package com.atlantbh.cinemabh.repository;
 
 import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
+import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -91,4 +92,47 @@ AND CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate
 AND m.moviePublishedStatus=PUBLISHED
 """)
   Page<Movie> getMoviesShowingPreviewsByVenueId(Pageable pageable, @Param("venueId") long venueId);
+
+  @Query(
+      value =
+"""
+    SELECT m.id, m.name, m.duration_minutes as durationMinutes,
+     p.image_url as imageUrl, gen.genres, m.start_showing_date as opensDate
+    FROM movies m
+    JOIN photos p
+    ON p.movie_id=m.id AND p.is_cover_photo=true
+    JOIN projections pr
+    ON pr.movie_id=m.id
+    JOIN halls h
+    ON h.id = pr.hall_id
+    JOIN venues v
+    ON v.id = h.venue_id
+    LEFT JOIN (
+        SELECT mg.movie_id,
+               array_agg(g.name ORDER BY g.name) as genres
+        FROM movies_genres mg
+        JOIN genres g ON g.id=mg.genre_id
+        GROUP BY mg.movie_id
+    ) gen
+    ON gen.movie_id = m.id
+    WHERE m.status='PUBLISHED'
+    AND CURRENT_DATE < m.start_showing_date
+    AND (:name='' OR :name IS NULL OR LOWER(m.name) LIKE CONCAT('%', LOWER(:name), '%') ESCAPE '\\')
+    AND (:cityId IS NULL OR v.city_id = :cityId)
+    AND (:venueId IS NULL OR v.id = :venueId)
+    AND (CAST(:startShowingDateFrom AS date) IS NULL OR m.start_showing_date >= CAST(:startShowingDateFrom AS date))
+    AND (CAST(:startShowingDateTo AS date) IS NULL OR m.start_showing_date <= CAST(:startShowingDateTo AS date))
+    AND (:genreId IS NULL OR m.id IN (
+            SELECT mg2.movie_id FROM movies_genres mg2 WHERE mg2.genre_id = :genreId
+        ))
+""",
+      nativeQuery = true)
+  Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(
+      Pageable pageable,
+      @Param("startShowingDateFrom") LocalDate startShowingDateFrom,
+      @Param("startShowingDateTo") LocalDate startShowingDateTo,
+      @Param("name") String name,
+      @Param("cityId") Long cityId,
+      @Param("venueId") Long venueId,
+      @Param("genreId") Long genreId);
 }

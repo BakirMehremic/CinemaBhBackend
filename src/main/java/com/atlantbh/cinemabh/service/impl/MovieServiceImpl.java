@@ -1,12 +1,14 @@
 package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.enums.MovieShowingStatus;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
+import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
 import com.atlantbh.cinemabh.service.MovieService;
 import java.util.List;
@@ -73,5 +75,19 @@ public class MovieServiceImpl implements MovieService {
     Page<Movie> movies = movieRepository.getMoviesShowingPreviewsByVenueId(pageable, venueId);
 
     return movies.map(movieMapper::toPreviewResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(
+      int pageNumber, int pageSize, FilterUpcomingMoviesRequest filter) {
+    return movieRepository.filterUpcomingMoviesPaginated(
+        PageRequest.of(pageNumber, pageSize),
+        filter.startShowingDateFrom(),
+        filter.startShowingDateTo(),
+        filter.name(),
+        filter.cityId(),
+        filter.venueId(),
+        filter.genreId());
   }
 }
