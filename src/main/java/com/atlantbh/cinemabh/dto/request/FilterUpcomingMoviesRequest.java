@@ -2,15 +2,41 @@ package com.atlantbh.cinemabh.dto.request;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import lombok.Getter;
 
-public record FilterUpcomingMoviesRequest(
-    @Future LocalDate startShowingDateFrom,
-    @Future LocalDate startShowingDateTo,
-    String name,
-    @Min(1) Long cityId,
-    @Min(1) Long venueId,
-    @Min(1) Long genreId,
-    @Min(0) @NotNull Integer pageNumber,
-    @Min(1) @NotNull Integer pageSize) {}
+@Getter
+public class FilterUpcomingMoviesRequest extends PaginationRequest {
+  @Future private final LocalDate startShowingDateFrom;
+
+  @Future private final LocalDate startShowingDateTo;
+
+  private final String name;
+
+  @Min(1)
+  private final Long cityId;
+
+  @Min(1)
+  private final Long venueId;
+
+  @Min(1)
+  private final Long genreId;
+
+  public FilterUpcomingMoviesRequest(
+      int pageNumber,
+      int pageSize,
+      LocalDate startShowingDateFrom,
+      LocalDate startShowingDateTo,
+      String name,
+      Long cityId,
+      Long venueId,
+      Long genreId) {
+    super(pageNumber, pageSize);
+    this.startShowingDateFrom = startShowingDateFrom;
+    this.startShowingDateTo = startShowingDateTo;
+    this.name = name;
+    this.cityId = cityId;
+    this.venueId = venueId;
+    this.genreId = genreId;
+  }
+}

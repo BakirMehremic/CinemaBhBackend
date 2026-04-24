@@ -82,12 +82,12 @@ public class MovieServiceImpl implements MovieService {
   public Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(
       FilterUpcomingMoviesRequest filter) {
     return movieRepository.filterUpcomingMoviesPaginated(
-        PageRequest.of(filter.pageNumber(), filter.pageSize()),
-        filter.startShowingDateFrom(),
-        filter.startShowingDateTo(),
-        filter.name(),
-        filter.cityId(),
-        filter.venueId(),
-        filter.genreId());
+        PageRequest.of(filter.getPageNumber(), filter.getPageSize()),
+        filter.getStartShowingDateFrom(),
+        filter.getStartShowingDateTo(),
+        filter.getName(),
+        filter.getCityId(),
+        filter.getVenueId(),
+        filter.getGenreId());
   }
 }
