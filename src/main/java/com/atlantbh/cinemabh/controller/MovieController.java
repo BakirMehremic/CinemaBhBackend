@@ -1,10 +1,12 @@
 package com.atlantbh.cinemabh.controller;
 
 import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
 import com.atlantbh.cinemabh.enums.MovieShowingStatus;
+import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.service.MovieService;
 import com.atlantbh.cinemabh.validator.IdValidator;
 import com.atlantbh.cinemabh.validator.PaginationValidator;
@@ -54,5 +56,13 @@ public class MovieController {
     return ResponseEntity.ok(
         PaginatedResponse.from(
             movieService.getMoviePreviewsPaginatedByVenueId(pageNumber, pageSize, venueId)));
+  }
+
+  @GetMapping("/upcoming")
+  public ResponseEntity<PaginatedResponse<MovieUpcomingProjection>> filterUpcomingMoviesPaginated(
+      @Valid FilterUpcomingMoviesRequest request) {
+
+    return ResponseEntity.ok(
+        PaginatedResponse.from(movieService.filterUpcomingMoviesPaginated(request)));
   }
 }
