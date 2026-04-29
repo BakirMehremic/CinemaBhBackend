@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import com.atlantbh.cinemabh.dto.request.common.PaginationRequest;
+import com.atlantbh.cinemabh.dto.request.venue.FilterVenuesBasicInfo;
 import com.atlantbh.cinemabh.dto.response.NameIdPair;
 import com.atlantbh.cinemabh.dto.response.VenuePreviewResponse;
 import com.atlantbh.cinemabh.entity.Venue;
@@ -26,8 +28,9 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<VenuePreviewResponse> getVenuePreviewsPaginated(int pageNumber, int pageSize) {
-    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+  public Page<VenuePreviewResponse> getVenuePreviewsPaginated(PaginationRequest paginationRequest) {
+    Pageable pageable =
+        PageRequest.of(paginationRequest.getPageNumber(), paginationRequest.getPageSize());
 
     Page<Long> pagedIds = venueRepository.getVenueIdsPaginated(pageable);
     if (pagedIds.isEmpty()) {
@@ -50,11 +53,11 @@ public class VenueServiceImpl implements VenueService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(
-      int pageNumber, int pageSize, Long cityId, String name) {
-    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+  public Page<VenueBasicInfoProjection> getVenuesBasicInfoPaginated(FilterVenuesBasicInfo filter) {
+    Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 
-    return venueRepository.getVenuesBasicInfoPaginated(pageable, cityId, name);
+    return venueRepository.getVenuesBasicInfoPaginated(
+        pageable, filter.getCityId(), filter.getName());
   }
 
   @Override

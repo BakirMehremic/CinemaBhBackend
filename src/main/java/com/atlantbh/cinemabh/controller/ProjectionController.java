@@ -1,14 +1,13 @@
 package com.atlantbh.cinemabh.controller;
 
+import com.atlantbh.cinemabh.dto.request.projection.FilterProjectionTimesRequest;
 import com.atlantbh.cinemabh.service.ProjectionService;
-import com.atlantbh.cinemabh.validator.IdValidator;
-import java.time.LocalDate;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -19,15 +18,8 @@ public class ProjectionController {
 
   @GetMapping("/showing/times")
   public ResponseEntity<List<String>> getShowingMoviesProjectionTimes(
-      @RequestParam(required = false) String movieName,
-      @RequestParam(required = false) Long cityId,
-      @RequestParam(required = false) Long venueId,
-      @RequestParam(required = false) Long genreId,
-      @RequestParam(required = false) LocalDate date) {
-    IdValidator.validateIdNullOrPositive(cityId, venueId, genreId);
+      @Valid FilterProjectionTimesRequest request) {
 
-    return ResponseEntity.ok(
-        projectionService.getShowingMoviesProjectionTimes(
-            movieName, cityId, venueId, genreId, date));
+    return ResponseEntity.ok(projectionService.getShowingMoviesProjectionTimes(request));
   }
 }

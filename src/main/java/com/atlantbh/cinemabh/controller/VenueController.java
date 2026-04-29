@@ -1,11 +1,13 @@
 package com.atlantbh.cinemabh.controller;
 
+import com.atlantbh.cinemabh.dto.request.common.PaginationRequest;
+import com.atlantbh.cinemabh.dto.request.venue.FilterVenuesBasicInfo;
 import com.atlantbh.cinemabh.dto.response.*;
 import com.atlantbh.cinemabh.projection.VenueBasicInfoProjection;
 import com.atlantbh.cinemabh.projection.VenueDetailsProjection;
 import com.atlantbh.cinemabh.service.VenueService;
 import com.atlantbh.cinemabh.validator.IdValidator;
-import com.atlantbh.cinemabh.validator.PaginationValidator;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,10 @@ public class VenueController {
 
   @GetMapping("/preview")
   public ResponseEntity<PaginatedResponse<VenuePreviewResponse>> getVenuesPreview(
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "4") int pageSize) {
-    PaginationValidator.validate(pageNumber, pageSize);
+      @Valid PaginationRequest request) {
 
     return ResponseEntity.ok(
-        PaginatedResponse.from(venueService.getVenuePreviewsPaginated(pageNumber, pageSize)));
+        PaginatedResponse.from(venueService.getVenuePreviewsPaginated(request)));
   }
 
   @GetMapping("/names")
@@ -37,16 +37,10 @@ public class VenueController {
 
   @GetMapping("/basic")
   public ResponseEntity<PaginatedResponse<VenueBasicInfoProjection>> getVenuesBasicInfo(
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "4") int pageSize,
-      @RequestParam(required = false) Long cityId,
-      @RequestParam(required = false) String name) {
-    PaginationValidator.validate(pageNumber, pageSize);
-    IdValidator.validateIdNullOrPositive(cityId);
+      @Valid FilterVenuesBasicInfo request) {
 
     return ResponseEntity.ok(
-        PaginatedResponse.from(
-            venueService.getVenuesBasicInfoPaginated(pageNumber, pageSize, cityId, name)));
+        PaginatedResponse.from(venueService.getVenuesBasicInfoPaginated(request)));
   }
 
   @GetMapping("/details/{venueId}")

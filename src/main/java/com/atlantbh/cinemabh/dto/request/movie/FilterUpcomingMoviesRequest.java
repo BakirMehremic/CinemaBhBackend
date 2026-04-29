@@ -1,5 +1,6 @@
-package com.atlantbh.cinemabh.dto.request;
+package com.atlantbh.cinemabh.dto.request.movie;
 
+import com.atlantbh.cinemabh.dto.request.common.PaginationRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;

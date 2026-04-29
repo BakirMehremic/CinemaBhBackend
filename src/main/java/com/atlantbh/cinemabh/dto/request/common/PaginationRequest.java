@@ -1,4 +1,4 @@
-package com.atlantbh.cinemabh.dto.request;
+package com.atlantbh.cinemabh.dto.request.common;
 
 import com.atlantbh.cinemabh.constant.PaginationConstants;
 import jakarta.validation.constraints.Max;
