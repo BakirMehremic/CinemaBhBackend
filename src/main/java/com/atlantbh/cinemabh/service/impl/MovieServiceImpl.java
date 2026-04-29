@@ -1,11 +1,11 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import com.atlantbh.cinemabh.dto.request.FilterMoviePreviews;
 import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
 import com.atlantbh.cinemabh.dto.request.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
-import com.atlantbh.cinemabh.enums.MovieShowingStatus;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
@@ -28,12 +28,11 @@ public class MovieServiceImpl implements MovieService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<MoviePreviewResponse> getMoviesPreviewPaginated(
-      int pageNumber, int pageSize, MovieShowingStatus showingStatus) {
-    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+  public Page<MoviePreviewResponse> getMoviesPreviewPaginated(FilterMoviePreviews filter) {
+    Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 
     Page<Long> pagedIds =
-        switch (showingStatus) {
+        switch (filter.getShowingStatus()) {
           case UPCOMING -> movieRepository.getUpcomingMovieIdsPaginated(pageable);
           case SHOWING -> movieRepository.getShowingMovieIdsPaginated(pageable);
         };

@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
@@ -10,7 +12,6 @@ public class FilterUpcomingMoviesRequest extends PaginationRequest {
   @Future private final LocalDate startShowingDateFrom;
 
   @Future private final LocalDate startShowingDateTo;
-
   private final String name;
 
   @Min(1)
@@ -23,8 +24,8 @@ public class FilterUpcomingMoviesRequest extends PaginationRequest {
   private final Long genreId;
 
   public FilterUpcomingMoviesRequest(
-      int pageNumber,
-      int pageSize,
+      Integer pageNumber,
+      Integer pageSize,
       LocalDate startShowingDateFrom,
       LocalDate startShowingDateTo,
       String name,
@@ -38,5 +39,14 @@ public class FilterUpcomingMoviesRequest extends PaginationRequest {
     this.cityId = cityId;
     this.venueId = venueId;
     this.genreId = genreId;
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "From date must be before to date or the same.")
+  public boolean isDateRangeValid() {
+    if (startShowingDateFrom == null || startShowingDateTo == null) {
+      return true;
+    }
+    return !startShowingDateFrom.isAfter(startShowingDateTo);
   }
 }

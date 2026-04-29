@@ -10,7 +10,7 @@ public record MovieShowingResponse(
     String coverPhotoUrl,
     String pgRating,
     String language,
-    Integer duration,
+    Integer durationMinutes,
     List<String> genres,
     List<LocalTime> projectionTimes,
     LocalDate lastProjectionDate) {}

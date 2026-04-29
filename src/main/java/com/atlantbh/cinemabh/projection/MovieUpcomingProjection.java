@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface MovieUpcomingProjection {
-  long getId();
+  Long getId();
 
   String getName();
 
-  int getDuration();
+  int getDurationMinutes();
 
   LocalDate getOpensDate();
 
