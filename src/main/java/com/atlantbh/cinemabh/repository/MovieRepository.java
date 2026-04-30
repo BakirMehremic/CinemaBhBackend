@@ -64,7 +64,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     ) gen
     ON gen.movie_id = m.id
     WHERE m.status='PUBLISHED'
-    AND CURRENT_DATE BETWEEN m.start_showing_date AND m.end_showing_date
+    AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
     AND (:name='' OR :name IS NULL OR LOWER(m.name) LIKE CONCAT('%', LOWER(:name), '%') ESCAPE '\\')
     AND (:genreId IS NULL OR m.id IN (
         SELECT mg2.movie_id FROM movies_genres mg2 WHERE mg2.genre_id = :genreId
@@ -110,7 +110,7 @@ AND m.moviePublishedStatus=PUBLISHED
     ) gen
     ON gen.movie_id = m.id
     WHERE m.status='PUBLISHED'
-    AND CURRENT_DATE < m.start_showing_date
+    AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date < m.start_showing_date
       AND EXISTS (
           SELECT 1 FROM projections pr
           JOIN halls h ON h.id = pr.hall_id
