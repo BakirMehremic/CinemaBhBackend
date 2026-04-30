@@ -4,7 +4,12 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 public record PaginatedResponse<T>(
-    List<T> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
+    List<T> content,
+    int pageNumber,
+    int pageSize,
+    long totalElements,
+    int totalPages,
+    boolean hasNext) {
 
   public static <T> PaginatedResponse<T> from(Page<T> page) {
     return new PaginatedResponse<>(
@@ -12,6 +17,7 @@ public record PaginatedResponse<T>(
         page.getNumber(),
         page.getSize(),
         page.getTotalElements(),
-        page.getTotalPages());
+        page.getTotalPages(),
+        page.hasNext());
   }
 }
