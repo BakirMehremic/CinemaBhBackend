@@ -1,18 +1,20 @@
 package com.atlantbh.cinemabh.service;
 
-import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterMovieByVenueIdRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterMoviePreviewsRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
-import com.atlantbh.cinemabh.enums.MovieShowingStatus;
+import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import org.springframework.data.domain.Page;
 
 public interface MovieService {
-  Page<MoviePreviewResponse> getMoviesPreviewPaginated(
-      int pageNumber, int pageSize, MovieShowingStatus showingStatus);
+  Page<MoviePreviewResponse> getMoviesPreviewPaginated(FilterMoviePreviewsRequest filter);
 
-  Page<MovieShowingResponse> filterShowingMoviesPaginated(
-      int pageNumber, int pageSize, FilterShowingMoviesRequest filter);
+  Page<MovieShowingResponse> filterShowingMoviesPaginated(FilterShowingMoviesRequest filter);
 
-  Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
-      int pageNumber, int pageSize, long venueId);
+  Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(FilterMovieByVenueIdRequest filter);
+
+  Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(FilterUpcomingMoviesRequest filter);
 }

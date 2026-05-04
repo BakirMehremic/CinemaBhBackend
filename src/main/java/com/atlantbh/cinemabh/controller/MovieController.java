@@ -1,13 +1,14 @@
 package com.atlantbh.cinemabh.controller;
 
-import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterMovieByVenueIdRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterMoviePreviewsRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
-import com.atlantbh.cinemabh.enums.MovieShowingStatus;
+import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.service.MovieService;
-import com.atlantbh.cinemabh.validator.IdValidator;
-import com.atlantbh.cinemabh.validator.PaginationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,38 +22,33 @@ public class MovieController {
 
   @GetMapping("/preview")
   public ResponseEntity<PaginatedResponse<MoviePreviewResponse>> getMoviesPreview(
-      @RequestParam(defaultValue = "SHOWING") MovieShowingStatus showingStatus,
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "4") int pageSize) {
-    PaginationValidator.validate(pageNumber, pageSize);
+      @Valid FilterMoviePreviewsRequest request) {
 
     return ResponseEntity.ok(
-        PaginatedResponse.from(
-            movieService.getMoviesPreviewPaginated(pageNumber, pageSize, showingStatus)));
+        PaginatedResponse.from(movieService.getMoviesPreviewPaginated(request)));
   }
 
   @GetMapping("/showing")
   public ResponseEntity<PaginatedResponse<MovieShowingResponse>> filterShowingMovies(
-      @Valid FilterShowingMoviesRequest filter,
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "9") int pageSize) {
-    PaginationValidator.validate(pageNumber, pageSize);
+      @Valid FilterShowingMoviesRequest filter) {
 
     return ResponseEntity.ok(
-        PaginatedResponse.from(
-            movieService.filterShowingMoviesPaginated(pageNumber, pageSize, filter)));
+        PaginatedResponse.from(movieService.filterShowingMoviesPaginated(filter)));
   }
 
   @GetMapping("/showing/venue")
   public ResponseEntity<PaginatedResponse<MoviePreviewResponse>> getMoviesByVenueIdPaginated(
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "9") int pageSize,
-      @RequestParam long venueId) {
-    PaginationValidator.validate(pageNumber, pageSize);
-    IdValidator.validateIdPositive(venueId);
+      @Valid FilterMovieByVenueIdRequest request) {
 
     return ResponseEntity.ok(
-        PaginatedResponse.from(
-            movieService.getMoviePreviewsPaginatedByVenueId(pageNumber, pageSize, venueId)));
+        PaginatedResponse.from(movieService.getMoviePreviewsPaginatedByVenueId(request)));
+  }
+
+  @GetMapping("/upcoming")
+  public ResponseEntity<PaginatedResponse<MovieUpcomingProjection>> filterUpcomingMoviesPaginated(
+      @Valid FilterUpcomingMoviesRequest request) {
+
+    return ResponseEntity.ok(
+        PaginatedResponse.from(movieService.filterUpcomingMoviesPaginated(request)));
   }
 }

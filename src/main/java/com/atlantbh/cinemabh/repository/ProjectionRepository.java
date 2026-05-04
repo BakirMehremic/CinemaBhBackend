@@ -23,7 +23,7 @@ public interface ProjectionRepository extends JpaRepository<Projection, Long> {
     JOIN movies m ON m.id=p.movie_id
     JOIN movies_genres mg ON mg.movie_id=m.id
     WHERE m.status='PUBLISHED'
-    AND CURRENT_DATE BETWEEN m.start_showing_date AND m.end_showing_date
+    AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
     AND (:movieName='' OR :movieName IS NULL OR LOWER(m.name) LIKE CONCAT('%', LOWER(:movieName), '%') ESCAPE '\\')
     AND (:cityId IS NULL OR c.id = :cityId)
     AND (:venueId IS NULL OR v.id = :venueId)

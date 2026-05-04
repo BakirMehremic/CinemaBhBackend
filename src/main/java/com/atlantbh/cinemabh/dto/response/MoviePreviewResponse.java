@@ -5,7 +5,7 @@ import java.util.List;
 public record MoviePreviewResponse(
     String name,
     Long id,
-    Integer duration,
+    Integer durationMinutes,
     String coverPhotoUrl,
     String synopsis,
     List<String> genres) {}

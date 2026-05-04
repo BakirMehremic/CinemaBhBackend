@@ -3,22 +3,16 @@ package com.atlantbh.cinemabh.projection;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface MovieShowingProjection {
+public interface MovieUpcomingProjection {
   Long getId();
 
   String getName();
 
-  String getPgRating();
-
-  String getLanguage();
-
   int getDurationMinutes();
 
-  LocalDate getEndShowingDate();
+  LocalDate getOpensDate();
 
-  String getImageUrl();
-
-  List<String> getStartTimes();
+  String getCoverPhotoUrl();
 
   List<String> getGenres();
 }

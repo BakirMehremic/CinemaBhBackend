@@ -1,12 +1,15 @@
 package com.atlantbh.cinemabh.service.impl;
 
-import com.atlantbh.cinemabh.dto.request.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterMovieByVenueIdRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterMoviePreviewsRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterShowingMoviesRequest;
+import com.atlantbh.cinemabh.dto.request.movie.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
-import com.atlantbh.cinemabh.enums.MovieShowingStatus;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
+import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
 import com.atlantbh.cinemabh.service.MovieService;
 import java.util.List;
@@ -26,12 +29,11 @@ public class MovieServiceImpl implements MovieService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<MoviePreviewResponse> getMoviesPreviewPaginated(
-      int pageNumber, int pageSize, MovieShowingStatus showingStatus) {
-    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+  public Page<MoviePreviewResponse> getMoviesPreviewPaginated(FilterMoviePreviewsRequest filter) {
+    Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 
     Page<Long> pagedIds =
-        switch (showingStatus) {
+        switch (filter.getShowingStatus()) {
           case UPCOMING -> movieRepository.getUpcomingMovieIdsPaginated(pageable);
           case SHOWING -> movieRepository.getShowingMovieIdsPaginated(pageable);
         };
@@ -51,27 +53,42 @@ public class MovieServiceImpl implements MovieService {
   @Override
   @Transactional(readOnly = true)
   public Page<MovieShowingResponse> filterShowingMoviesPaginated(
-      int pageNumber, int pageSize, FilterShowingMoviesRequest filter) {
+      FilterShowingMoviesRequest filter) {
     Page<MovieShowingProjection> projections =
         movieRepository.filterShowingMoviesPaginated(
-            PageRequest.of(pageNumber, pageSize),
-            filter.projectionDate(),
-            filter.projectionTime(),
-            filter.name(),
-            filter.cityId(),
-            filter.venueId(),
-            filter.genreId());
+            PageRequest.of(filter.getPageNumber(), filter.getPageSize()),
+            filter.getProjectionDate(),
+            filter.getProjectionTime(),
+            filter.getName(),
+            filter.getCityId(),
+            filter.getVenueId(),
+            filter.getGenreId());
 
     return movieMapper.toShowingResponseList(projections);
   }
 
   @Override
   public Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
-      int pageNumber, int pageSize, long venueId) {
-    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+      FilterMovieByVenueIdRequest filter) {
+    Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 
-    Page<Movie> movies = movieRepository.getMoviesShowingPreviewsByVenueId(pageable, venueId);
+    Page<Movie> movies =
+        movieRepository.getMoviesShowingPreviewsByVenueId(pageable, filter.getVenueId());
 
     return movies.map(movieMapper::toPreviewResponse);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(
+      FilterUpcomingMoviesRequest filter) {
+    return movieRepository.filterUpcomingMoviesPaginated(
+        PageRequest.of(filter.getPageNumber(), filter.getPageSize()),
+        filter.getStartShowingDateFrom(),
+        filter.getStartShowingDateTo(),
+        filter.getName(),
+        filter.getCityId(),
+        filter.getVenueId(),
+        filter.getGenreId());
   }
 }
