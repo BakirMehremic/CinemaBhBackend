@@ -49,4 +49,9 @@ public class ExceptionResponseHandler {
   public ResponseEntity<ErrorResponse> handleInvalidRequest(InvalidRequestException ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
   }
+
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
+  }
 }
