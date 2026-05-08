@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class PhoneNumberValidator {
   private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
-  public void validate(String phoneNumber) {
+  public String validateAndNormalize(String phoneNumber) {
     try {
       Phonenumber.PhoneNumber parsed;
 
@@ -24,6 +24,7 @@ public class PhoneNumberValidator {
         throw new InvalidRequestException("Invalid phone number");
       }
 
+      return phoneUtil.format(parsed, PhoneNumberUtil.PhoneNumberFormat.E164);
     } catch (NumberParseException e) {
       throw new InvalidRequestException("Invalid phone number");
     }

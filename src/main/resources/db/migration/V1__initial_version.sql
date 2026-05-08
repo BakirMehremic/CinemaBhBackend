@@ -165,19 +165,27 @@ CREATE TABLE "users_projections_seats"
 
 CREATE TABLE "verification_codes"
 (
+    "id"         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "user_id"    BIGINT            NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "code_hash"  TEXT              NOT NULL,
-    "type"       verification_type NOT NULL
+    "type"       verification_type NOT NULL,
+
+    UNIQUE ("user_id", "type")
 );
 
 CREATE TABLE "refresh_tokens"
 (
+    "id"         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "user_id"    BIGINT NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "token"      TEXT NOT NULL
+    "token_hash" TEXT   NOT NULL
 );
 
 ALTER TABLE "verification_codes"
+    ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "refresh_tokens"
     ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 
 CREATE UNIQUE INDEX ON "cities" ("name", "country_id");

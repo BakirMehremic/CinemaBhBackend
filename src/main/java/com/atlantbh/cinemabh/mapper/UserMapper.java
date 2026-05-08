@@ -8,5 +8,6 @@ import com.atlantbh.cinemabh.entity.User;
 public interface UserMapper {
   UserPreviewResponse toPreviewResponse(User user);
 
-  User toEntity(RegisterUserRequest request, City city, String passwordHash);
+  User toEntity(
+      RegisterUserRequest request, String phoneNumberNormalized, City city, String passwordHash);
 }

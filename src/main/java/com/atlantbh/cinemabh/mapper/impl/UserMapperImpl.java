@@ -18,17 +18,19 @@ public class UserMapperImpl implements UserMapper {
         user.getFirstName(),
         user.getLastName(),
         user.getEmail(),
+        user.getPhoneNumber(),
         user.getImageUrl(),
         user.getUserRole().name());
   }
 
   @Override
-  public User toEntity(RegisterUserRequest request, City city, String passwordHash) {
+  public User toEntity(
+      RegisterUserRequest request, String phoneNumberNormalized, City city, String passwordHash) {
     User user = new User();
     user.setFirstName(request.firstName());
     user.setLastName(request.lastName());
     user.setEmail(request.email());
-    user.setPhoneNumber(request.phoneNumber());
+    user.setPhoneNumber(phoneNumberNormalized);
     user.setImageUrl(request.imageUrl());
     user.setStreet(request.street());
     user.setCity(city);

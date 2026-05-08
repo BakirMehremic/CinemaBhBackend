@@ -11,6 +11,7 @@ import com.atlantbh.cinemabh.mapper.UserMapper;
 import com.atlantbh.cinemabh.repository.CityRepository;
 import com.atlantbh.cinemabh.repository.UserRepository;
 import com.atlantbh.cinemabh.service.JwtService;
+import com.atlantbh.cinemabh.service.RefreshTokenService;
 import com.atlantbh.cinemabh.service.UserService;
 import com.atlantbh.cinemabh.validator.ImageUrlValidator;
 import com.atlantbh.cinemabh.validator.PhoneNumberValidator;
@@ -21,6 +22,7 @@ import java.awt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,18 +36,20 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper;
   private final JwtService jwtService;
+  private final RefreshTokenService refreshTokenService;
 
   // TODO user verification code ?
+  @Transactional
   @Override
   public AuthResponse registerUser(RegisterUserRequest request) {
     passwordComplexityValidator.validate(request.password());
-    phoneNumberValidator.validate(request.phoneNumber());
     ReservedNameValidator.validate(request.firstName(), request.lastName());
     pwnedPasswordValidator.validatePasswordPwned(request.password());
     imageUrlValidator.validateImageUrl(request.imageUrl());
+    String phoneNumberNormalized = phoneNumberValidator.validateAndNormalize(request.phoneNumber());
 
     userRepository
-        .findByEmailOrPhoneNumber(request.email(), request.phoneNumber())
+        .findByEmailOrPhoneNumber(request.email(), phoneNumberNormalized)
         .ifPresent(
             user -> {
               if (user.getEmail().equals(request.email())) {
@@ -59,16 +63,22 @@ public class UserServiceImpl implements UserService {
             .findById(request.cityId())
             .orElseThrow(() -> new InvalidRequestException("Nonexistent city id"));
 
-    User user = userMapper.toEntity(request, city, passwordEncoder.encode(request.password()));
+    User user =
+        userMapper.toEntity(
+            request, phoneNumberNormalized, city, passwordEncoder.encode(request.password()));
 
     User savedUser = userRepository.save(user);
 
     String jwtToken = jwtService.generateJwt(savedUser);
     String refreshToken = jwtService.generateRefreshToken(savedUser);
 
+    refreshTokenService.hashAndSaveRefreshToken(refreshToken);
+
     return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(savedUser));
   }
 
+  // TODO is verified check
+  @Transactional
   @Override
   public AuthResponse login(LoginRequest request) {
     User user =
@@ -83,6 +93,26 @@ public class UserServiceImpl implements UserService {
     String jwtToken = jwtService.generateJwt(user);
     String refreshToken = jwtService.generateRefreshToken(user);
 
+    refreshTokenService.hashAndSaveRefreshToken(refreshToken);
+
     return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(user));
+  }
+
+  @Transactional
+  @Override
+  public AuthResponse refresh(String refreshToken) {
+    if (!refreshTokenService.isRefreshTokenValid(refreshToken)) {
+      throw new UnauthorizedException("Invalid refresh token");
+    }
+
+    User user =
+        userRepository
+            .findById(jwtService.extractUserId(refreshToken))
+            .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+
+    String jwtToken = jwtService.generateJwt(user);
+    String refresh = jwtService.generateRefreshToken(user);
+
+    return new AuthResponse(jwtToken, refresh, userMapper.toPreviewResponse(user));
   }
 }

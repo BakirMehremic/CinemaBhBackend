@@ -6,4 +6,5 @@ public record UserPreviewResponse(
     String lastName,
     String email,
     String phoneNumber,
-    String imageUrl) {}
+    String imageUrl,
+    String role) {}

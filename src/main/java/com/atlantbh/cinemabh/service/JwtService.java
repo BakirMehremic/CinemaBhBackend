@@ -1,19 +1,17 @@
 package com.atlantbh.cinemabh.service;
 
-import com.atlantbh.cinemabh.dto.response.AuthResponse;
 import com.atlantbh.cinemabh.entity.User;
-import jakarta.servlet.http.HttpServletResponse;
 
 public interface JwtService {
   String generateJwt(User user);
 
   String generateRefreshToken(User user);
 
-  String extractEmail(String token);
+  Long extractUserId(String token);
 
   String extractRole(String token);
 
-  boolean isTokenValid(String token, String userEmail);
+  boolean isTokenValid(String token, Long userId);
 
-  void setTokenCookies(HttpServletResponse response, AuthResponse auth);
+  boolean isTokenExpired(String token);
 }
