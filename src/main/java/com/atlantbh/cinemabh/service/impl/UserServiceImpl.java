@@ -2,17 +2,19 @@ package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.dto.request.user.LoginRequest;
 import com.atlantbh.cinemabh.dto.request.user.RegisterUserRequest;
+import com.atlantbh.cinemabh.dto.request.user.ResetPasswordRequest;
+import com.atlantbh.cinemabh.dto.request.user.VerificationRequest;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
+import com.atlantbh.cinemabh.dto.response.UserPreviewResponse;
 import com.atlantbh.cinemabh.entity.City;
 import com.atlantbh.cinemabh.entity.User;
+import com.atlantbh.cinemabh.enums.VerificationType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
 import com.atlantbh.cinemabh.exception.UnauthorizedException;
 import com.atlantbh.cinemabh.mapper.UserMapper;
 import com.atlantbh.cinemabh.repository.CityRepository;
 import com.atlantbh.cinemabh.repository.UserRepository;
-import com.atlantbh.cinemabh.service.JwtService;
-import com.atlantbh.cinemabh.service.RefreshTokenService;
-import com.atlantbh.cinemabh.service.UserService;
+import com.atlantbh.cinemabh.service.*;
 import com.atlantbh.cinemabh.validator.ImageUrlValidator;
 import com.atlantbh.cinemabh.validator.PhoneNumberValidator;
 import com.atlantbh.cinemabh.validator.ReservedNameValidator;
@@ -37,11 +39,12 @@ public class UserServiceImpl implements UserService {
   private final UserMapper userMapper;
   private final JwtService jwtService;
   private final RefreshTokenService refreshTokenService;
+  private final EmailSendingService emailSendingService;
+  private final VerificationCodeService verificationCodeService;
 
-  // TODO user verification code ?
   @Transactional
   @Override
-  public AuthResponse registerUser(RegisterUserRequest request) {
+  public UserPreviewResponse registerUser(RegisterUserRequest request) {
     passwordComplexityValidator.validate(request.password());
     ReservedNameValidator.validate(request.firstName(), request.lastName());
     pwnedPasswordValidator.validatePasswordPwned(request.password());
@@ -69,15 +72,15 @@ public class UserServiceImpl implements UserService {
 
     User savedUser = userRepository.save(user);
 
-    String jwtToken = jwtService.generateJwt(savedUser);
-    String refreshToken = jwtService.generateRefreshToken(savedUser);
+    String verificationCode =
+        verificationCodeService.generateAndSaveCode(user.getId(), VerificationType.REGISTER);
 
-    refreshTokenService.hashAndSaveRefreshToken(refreshToken);
+    emailSendingService.sendVerificationEmail(
+        user.getEmail(), "Email verification code", verificationCode);
 
-    return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(savedUser));
+    return userMapper.toPreviewResponse(savedUser);
   }
 
-  // TODO is verified check
   @Transactional
   @Override
   public AuthResponse login(LoginRequest request) {
@@ -88,6 +91,10 @@ public class UserServiceImpl implements UserService {
 
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
       throw new UnauthorizedException("Invalid email or password");
+    }
+
+    if (!user.isVerified()) {
+      throw new UnauthorizedException("Please verify your account");
     }
 
     String jwtToken = jwtService.generateJwt(user);
@@ -113,6 +120,54 @@ public class UserServiceImpl implements UserService {
     String jwtToken = jwtService.generateJwt(user);
     String refresh = jwtService.generateRefreshToken(user);
 
+    refreshTokenService.hashAndSaveRefreshToken(refreshToken);
+
     return new AuthResponse(jwtToken, refresh, userMapper.toPreviewResponse(user));
+  }
+
+  @Transactional
+  @Override
+  public AuthResponse activateAccount(VerificationRequest request) {
+    User user =
+        userRepository
+            .findByEmail(request.email())
+            .orElseThrow(() -> new InvalidRequestException("Invalid email"));
+
+    if (user.isVerified()) {
+      throw new InvalidRequestException("Your account is already verified");
+    }
+
+    if (!verificationCodeService.isCodeValid(
+        request.verificationCode(), user.getId(), VerificationType.REGISTER)) {
+      throw new UnauthorizedException("Invalid verification code");
+    }
+
+    user.setVerified(true);
+    userRepository.save(user);
+
+    String jwtToken = jwtService.generateJwt(user);
+    String refreshToken = jwtService.generateRefreshToken(user);
+
+    refreshTokenService.hashAndSaveRefreshToken(refreshToken);
+
+    return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(user));
+  }
+
+  @Override
+  public void requestPasswordReset(ResetPasswordRequest request) {
+    User user =
+        userRepository
+            .findByEmail(request.email())
+            .orElseThrow(() -> new InvalidRequestException("Invalid email"));
+
+    if (!user.isVerified()) {
+      throw new UnauthorizedException("Please verify your account");
+    }
+
+    String verificationCode =
+        verificationCodeService.generateAndSaveCode(user.getId(), VerificationType.PASSWORD_RESET);
+
+    emailSendingService.sendVerificationEmail(
+        user.getEmail(), "Password reset verification code", verificationCode);
   }
 }

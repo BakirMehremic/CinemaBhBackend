@@ -42,7 +42,8 @@ public class User {
 
   @Column private LocalDateTime createdAt;
 
-  @Column private Boolean isVerified;
+  @Column(name = "is_verified", nullable = false)
+  private boolean verified;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "city_id", nullable = false)

@@ -169,9 +169,7 @@ CREATE TABLE "verification_codes"
     "user_id"    BIGINT            NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "code_hash"  TEXT              NOT NULL,
-    "type"       verification_type NOT NULL,
-
-    UNIQUE ("user_id", "type")
+    "type"       verification_type NOT NULL
 );
 
 CREATE TABLE "refresh_tokens"

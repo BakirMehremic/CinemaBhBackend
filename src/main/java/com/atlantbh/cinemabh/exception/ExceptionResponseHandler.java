@@ -54,4 +54,10 @@ public class ExceptionResponseHandler {
   public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex) {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
   }
+
+  @ExceptionHandler(ServiceUnavailableException.class)
+  public ResponseEntity<ErrorResponse> handleUnavailable(ServiceUnavailableException ex) {
+    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+        .body(new ErrorResponse(ex.getMessage()));
+  }
 }

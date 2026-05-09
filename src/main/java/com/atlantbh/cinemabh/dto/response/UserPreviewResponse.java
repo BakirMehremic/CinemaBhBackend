@@ -7,4 +7,5 @@ public record UserPreviewResponse(
     String email,
     String phoneNumber,
     String imageUrl,
-    String role) {}
+    String role,
+    Boolean verified) {}

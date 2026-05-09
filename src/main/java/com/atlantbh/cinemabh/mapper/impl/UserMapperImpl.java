@@ -20,7 +20,8 @@ public class UserMapperImpl implements UserMapper {
         user.getEmail(),
         user.getPhoneNumber(),
         user.getImageUrl(),
-        user.getUserRole().name());
+        user.getUserRole().name(),
+        user.isVerified());
   }
 
   @Override
@@ -37,6 +38,7 @@ public class UserMapperImpl implements UserMapper {
     user.setCreatedAt(LocalDateTime.now());
     user.setUserRole(UserRole.REGISTERED_USER);
     user.setPasswordHash(passwordHash);
+    user.setVerified(false);
     return user;
   }
 }

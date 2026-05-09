@@ -8,4 +8,8 @@ public interface CookieService {
   void setTokenCookies(HttpServletResponse response, AuthResponse auth);
 
   String extractRefreshToken(HttpServletRequest request);
+
+  String extractAccessToken(HttpServletRequest request);
+
+  Long extractUserId(HttpServletRequest request);
 }
