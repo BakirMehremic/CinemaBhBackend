@@ -20,7 +20,7 @@ public class EmailSendingServiceImpl implements EmailSendingService {
   public void sendVerificationEmail(String recipient, String subject, String code) {
     log.warn("code is {}", code);
     return; // uncomment later
-/*    String htmlBody =
+    /*String htmlBody =
         "<h1>Verification Code</h1>" + "<h2>Your code is: <strong>" + code + "</strong></h2>";
 
     CreateEmailOptions params =

@@ -1,9 +1,6 @@
 package com.atlantbh.cinemabh.service.impl;
 
-import com.atlantbh.cinemabh.dto.request.user.LoginRequest;
-import com.atlantbh.cinemabh.dto.request.user.RegisterUserRequest;
-import com.atlantbh.cinemabh.dto.request.user.ResetPasswordRequest;
-import com.atlantbh.cinemabh.dto.request.user.VerificationRequest;
+import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
 import com.atlantbh.cinemabh.dto.response.UserPreviewResponse;
 import com.atlantbh.cinemabh.entity.City;
@@ -42,8 +39,8 @@ public class UserServiceImpl implements UserService {
   private final EmailSendingService emailSendingService;
   private final VerificationCodeService verificationCodeService;
 
-  @Transactional
   @Override
+  @Transactional
   public UserPreviewResponse registerUser(RegisterUserRequest request) {
     passwordComplexityValidator.validate(request.password());
     ReservedNameValidator.validate(request.firstName(), request.lastName());
@@ -81,8 +78,8 @@ public class UserServiceImpl implements UserService {
     return userMapper.toPreviewResponse(savedUser);
   }
 
-  @Transactional
   @Override
+  @Transactional
   public AuthResponse login(LoginRequest request) {
     User user =
         userRepository
@@ -105,8 +102,8 @@ public class UserServiceImpl implements UserService {
     return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(user));
   }
 
-  @Transactional
   @Override
+  @Transactional
   public AuthResponse refresh(String refreshToken) {
     if (!refreshTokenService.isRefreshTokenValid(refreshToken)) {
       throw new UnauthorizedException("Invalid refresh token");
@@ -125,8 +122,8 @@ public class UserServiceImpl implements UserService {
     return new AuthResponse(jwtToken, refresh, userMapper.toPreviewResponse(user));
   }
 
-  @Transactional
   @Override
+  @Transactional
   public AuthResponse activateAccount(VerificationRequest request) {
     User user =
         userRepository
@@ -139,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
     if (!verificationCodeService.isCodeValid(
         request.verificationCode(), user.getId(), VerificationType.REGISTER)) {
-      throw new UnauthorizedException("Invalid verification code");
+      throw new UnauthorizedException("Invalid or expired code");
     }
 
     user.setVerified(true);
@@ -154,6 +151,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public void requestPasswordReset(ResetPasswordRequest request) {
     User user =
         userRepository
@@ -169,5 +167,28 @@ public class UserServiceImpl implements UserService {
 
     emailSendingService.sendVerificationEmail(
         user.getEmail(), "Password reset verification code", verificationCode);
+  }
+
+  @Override
+  @Transactional
+  public void confirmPasswordReset(PasswordResetConfirmRequest request) {
+    User user =
+        userRepository
+            .findByEmail(request.email())
+            .orElseThrow(() -> new InvalidRequestException("Invalid email"));
+
+    boolean isValid =
+        verificationCodeService.isCodeValid(
+            request.code(), user.getId(), VerificationType.PASSWORD_RESET);
+
+    if (!isValid) {
+      throw new InvalidRequestException("Invalid or expired reset code");
+    }
+
+    passwordComplexityValidator.validate(request.newPassword());
+    pwnedPasswordValidator.validatePasswordPwned(request.newPassword());
+
+    user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+    userRepository.save(user);
   }
 }

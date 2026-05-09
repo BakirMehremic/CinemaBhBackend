@@ -7,6 +7,7 @@ import com.atlantbh.cinemabh.enums.VerificationType;
 import com.atlantbh.cinemabh.repository.VerificationCodeRepository;
 import com.atlantbh.cinemabh.service.VerificationCodeService;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,6 +34,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     codeEntity.setCodeHash(toSha256(code));
     codeEntity.setUserId(userId);
     codeEntity.setVerificationType(type);
+    codeEntity.setCreatedAt(LocalDateTime.now());
     verificationCodeRepository.save(codeEntity);
 
     return code;

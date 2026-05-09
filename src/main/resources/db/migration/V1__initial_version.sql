@@ -166,18 +166,18 @@ CREATE TABLE "users_projections_seats"
 CREATE TABLE "verification_codes"
 (
     "id"         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    "user_id"    BIGINT            NOT NULL,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "code_hash"  TEXT              NOT NULL,
-    "type"       verification_type NOT NULL
+    "user_id"    BIGINT                              NOT NULL,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "code_hash"  TEXT                                NOT NULL,
+    "type"       verification_type                   NOT NULL
 );
 
 CREATE TABLE "refresh_tokens"
 (
     "id"         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    "user_id"    BIGINT NOT NULL,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "token_hash" TEXT   NOT NULL
+    "user_id"    BIGINT                              NOT NULL,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "token_hash" TEXT                                NOT NULL
 );
 
 ALTER TABLE "verification_codes"

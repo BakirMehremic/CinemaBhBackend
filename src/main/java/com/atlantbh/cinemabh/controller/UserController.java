@@ -1,10 +1,8 @@
 package com.atlantbh.cinemabh.controller;
 
-import com.atlantbh.cinemabh.dto.request.user.LoginRequest;
-import com.atlantbh.cinemabh.dto.request.user.RegisterUserRequest;
-import com.atlantbh.cinemabh.dto.request.user.ResetPasswordRequest;
-import com.atlantbh.cinemabh.dto.request.user.VerificationRequest;
+import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
+import com.atlantbh.cinemabh.dto.response.MessageDataResponse;
 import com.atlantbh.cinemabh.dto.response.MessageResponse;
 import com.atlantbh.cinemabh.dto.response.UserPreviewResponse;
 import com.atlantbh.cinemabh.service.CookieService;
@@ -28,13 +26,13 @@ public class UserController {
   private final CookieService cookieService;
 
   @PostMapping("/register")
-  public ResponseEntity<MessageResponse<UserPreviewResponse>> register(
+  public ResponseEntity<MessageDataResponse<UserPreviewResponse>> register(
       @Valid @RequestBody RegisterUserRequest request) {
     UserPreviewResponse createdUser = userService.registerUser(request);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(
-            new MessageResponse<>(
+            new MessageDataResponse<>(
                 "Registration successful, please verify your account via email.", createdUser));
   }
 
@@ -58,18 +56,27 @@ public class UserController {
 
   @PostMapping("/verify")
   public ResponseEntity<UserPreviewResponse> activateAccount(
-      HttpServletResponse response, @Valid @RequestBody VerificationRequest verificationRequest) {
+      HttpServletResponse response, @Valid @RequestBody VerificationRequest request) {
 
-    AuthResponse authResponse = userService.activateAccount(verificationRequest);
+    AuthResponse authResponse = userService.activateAccount(request);
     cookieService.setTokenCookies(response, authResponse);
     return ResponseEntity.ok(authResponse.user());
   }
 
   @PostMapping("/password/reset")
-  public ResponseEntity<String> requestPasswordReset(
-      @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+  public ResponseEntity<MessageResponse> requestPasswordReset(
+      @Valid @RequestBody ResetPasswordRequest request) {
 
-    userService.requestPasswordReset(resetPasswordRequest);
-    return ResponseEntity.ok("Reset code sent to your email.");
+    userService.requestPasswordReset(request);
+    return ResponseEntity.ok(new MessageResponse("Reset code sent to your email."));
+  }
+
+  @PostMapping("/password/reset/verify")
+  public ResponseEntity<MessageResponse> confirmPasswordReset(
+      @Valid @RequestBody PasswordResetConfirmRequest request) {
+    userService.confirmPasswordReset(request);
+
+    return ResponseEntity.ok(
+        new MessageResponse("Password has been reset successfully, you can now log in."));
   }
 }
