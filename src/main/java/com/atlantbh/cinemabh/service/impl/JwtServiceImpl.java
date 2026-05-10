@@ -15,11 +15,11 @@ public class JwtServiceImpl implements JwtService {
   @Value("${application.security.jwt.secret-key}")
   private String secretKey;
 
-  @Value("${application.security.jwt.expiration-ms}")
-  private long jwtExpirationMs;
+  @Value("${application.security.jwt.expiration-min}")
+  private long jwtExpirationMinutes;
 
-  @Value("${application.security.jwt.refresh-token-expiration-ms}")
-  private long refreshExpirationMs;
+  @Value("${application.security.jwt.refresh-token-expiration-min}")
+  private long refreshExpirationMinutes;
 
   @Override
   public String generateJwt(User user) {
@@ -27,7 +27,7 @@ public class JwtServiceImpl implements JwtService {
         .claim("role", user.getUserRole().toString())
         .subject(user.getId().toString())
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(Date.from(Instant.now().plusMillis(jwtExpirationMs)))
+        .expiration(Date.from(Instant.now().plusSeconds(jwtExpirationMinutes * 60)))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
@@ -37,7 +37,7 @@ public class JwtServiceImpl implements JwtService {
     return Jwts.builder()
         .subject(user.getId().toString())
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(Date.from(Instant.now().plusMillis(refreshExpirationMs)))
+        .expiration(Date.from(Instant.now().plusSeconds(refreshExpirationMinutes * 60)))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
@@ -55,9 +55,13 @@ public class JwtServiceImpl implements JwtService {
   }
 
   @Override
-  public boolean isTokenValid(String token, Long userId) {
-    Long extractedId = extractUserId(token);
-    return (extractedId.equals(userId) && !isTokenExpired(token));
+  public boolean isTokenValid(String token) {
+    try {
+      Claims claims = extractAllClaims(token);
+      return claims.getExpiration().after(new Date());
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   @Override

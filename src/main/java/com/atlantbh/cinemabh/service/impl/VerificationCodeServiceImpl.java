@@ -40,7 +40,6 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     return code;
   }
 
-  // TODO expired code check
   @Override
   public boolean isCodeValid(String code, Long userId, VerificationType type) {
     Optional<VerificationCode> storedCode =

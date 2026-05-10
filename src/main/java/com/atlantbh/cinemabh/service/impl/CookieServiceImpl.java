@@ -1,7 +1,6 @@
 package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
-import com.atlantbh.cinemabh.exception.UnauthorizedException;
 import com.atlantbh.cinemabh.service.CookieService;
 import com.atlantbh.cinemabh.service.JwtService;
 import jakarta.servlet.http.Cookie;
@@ -19,11 +18,11 @@ import org.springframework.stereotype.Service;
 public class CookieServiceImpl implements CookieService {
   private final JwtService jwtService;
 
-  @Value("${application.security.jwt.expiration-ms}")
-  private long jwtExpirationMs;
+  @Value("${application.security.jwt.expiration-min}")
+  private long jwtExpirationMinutes;
 
-  @Value("${application.security.jwt.refresh-token-expiration-ms}")
-  private long refreshExpirationMs;
+  @Value("${application.security.jwt.refresh-token-expiration-min}")
+  private long refreshExpirationMinutes;
 
   @Override
   public void setTokenCookies(HttpServletResponse response, AuthResponse auth) {
@@ -32,7 +31,7 @@ public class CookieServiceImpl implements CookieService {
             .httpOnly(true)
             .secure(true)
             .path("/")
-            .maxAge(jwtExpirationMs / 1000)
+            .maxAge(jwtExpirationMinutes * 60)
             .sameSite("Strict")
             .build();
 
@@ -41,7 +40,7 @@ public class CookieServiceImpl implements CookieService {
             .httpOnly(true)
             .secure(true)
             .path("/")
-            .maxAge(refreshExpirationMs / 1000)
+            .maxAge(refreshExpirationMinutes * 60)
             .sameSite("Strict")
             .build();
 
@@ -68,13 +67,13 @@ public class CookieServiceImpl implements CookieService {
 
   private String getCookieValue(HttpServletRequest request, String name) {
     if (request.getCookies() == null) {
-      throw new UnauthorizedException("No cookies found in request");
+      return null;
     }
 
     return Arrays.stream(request.getCookies())
         .filter(cookie -> name.equals(cookie.getName()))
         .map(Cookie::getValue)
         .findFirst()
-        .orElseThrow(() -> new UnauthorizedException("Cookie not found: " + name));
+        .orElse(null);
   }
 }
