@@ -1,15 +1,20 @@
 package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.entity.User;
+import com.atlantbh.cinemabh.enums.AuthEventOutcome;
+import com.atlantbh.cinemabh.enums.AuthEventType;
+import com.atlantbh.cinemabh.logging.AuthEvent;
 import com.atlantbh.cinemabh.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.time.Instant;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class JwtServiceImpl implements JwtService {
   @Value("${application.security.jwt.secret-key}")
@@ -23,6 +28,11 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public String generateJwt(User user) {
+    log.info(
+        "{}",
+        AuthEvent.builder(AuthEventType.ISSUE_ACCESS_TOKEN, AuthEventOutcome.SUCCESS)
+            .userId(user.getId())
+            .build());
     return Jwts.builder()
         .claim("role", user.getUserRole().toString())
         .subject(user.getId().toString())
@@ -34,6 +44,11 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public String generateRefreshToken(User user) {
+    log.info(
+        "{}",
+        AuthEvent.builder(AuthEventType.ISSUE_REFRESH_TOKEN, AuthEventOutcome.SUCCESS)
+            .userId(user.getId())
+            .build());
     return Jwts.builder()
         .subject(user.getId().toString())
         .issuedAt(new Date(System.currentTimeMillis()))

@@ -3,7 +3,10 @@ package com.atlantbh.cinemabh.service.impl;
 import static com.atlantbh.cinemabh.util.HashingUtils.toSha256;
 
 import com.atlantbh.cinemabh.entity.VerificationCode;
+import com.atlantbh.cinemabh.enums.AuthEventOutcome;
+import com.atlantbh.cinemabh.enums.AuthEventType;
 import com.atlantbh.cinemabh.enums.VerificationType;
+import com.atlantbh.cinemabh.logging.AuthEvent;
 import com.atlantbh.cinemabh.repository.VerificationCodeRepository;
 import com.atlantbh.cinemabh.service.VerificationCodeService;
 import java.security.SecureRandom;
@@ -12,8 +15,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VerificationCodeServiceImpl implements VerificationCodeService {
@@ -36,7 +41,11 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     codeEntity.setVerificationType(type);
     codeEntity.setCreatedAt(LocalDateTime.now());
     verificationCodeRepository.save(codeEntity);
-
+    log.info(
+        "{}",
+        AuthEvent.builder(AuthEventType.ISSUE_CODE, AuthEventOutcome.SUCCESS)
+            .userId(userId)
+            .build());
     return code;
   }
 
@@ -48,9 +57,18 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     if (storedCode.isPresent()) {
       verificationCodeRepository.delete(storedCode.get());
+      log.info(
+          "{}",
+          AuthEvent.builder(AuthEventType.VALIDATE_CODE, AuthEventOutcome.SUCCESS)
+              .userId(userId)
+              .build());
       return true;
     }
-
+    log.warn(
+        "{}",
+        AuthEvent.builder(AuthEventType.VALIDATE_CODE, AuthEventOutcome.FAILURE)
+            .userId(userId)
+            .build());
     return false;
   }
 }

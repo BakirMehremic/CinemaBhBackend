@@ -2,7 +2,11 @@ package com.atlantbh.cinemabh.validator.password;
 
 import static com.atlantbh.cinemabh.util.HashingUtils.toSha1;
 
+import com.atlantbh.cinemabh.enums.AuthEventOutcome;
+import com.atlantbh.cinemabh.enums.AuthEventType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
+import com.atlantbh.cinemabh.exception.ServiceUnavailableException;
+import com.atlantbh.cinemabh.logging.AuthEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,10 +26,15 @@ public class PwnedPasswordValidator {
 
     if (response == null) {
       log.warn("Did not get response form {}", PWNED_API);
-      throw new RuntimeException("Could not validate password");
+      throw new ServiceUnavailableException("Could not validate password");
     }
 
     if (response.toUpperCase().contains(hash.substring(5).toUpperCase())) {
+      log.warn(
+          "{}",
+          AuthEvent.builder(AuthEventType.PASSWORD_VALIDATION, AuthEventOutcome.FAILURE)
+              .detail("User tried to use pwned password")
+              .build());
       throw new InvalidRequestException("Password has been compromised");
     }
   }
