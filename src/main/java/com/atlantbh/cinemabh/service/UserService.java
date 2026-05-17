@@ -2,18 +2,18 @@ package com.atlantbh.cinemabh.service;
 
 import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
-import com.atlantbh.cinemabh.dto.response.UserPreviewResponse;
+import com.atlantbh.cinemabh.dto.response.UserDetailsResponse;
 
 public interface UserService {
-  UserPreviewResponse registerUser(RegisterUserRequest request);
+  UserDetailsResponse registerUser(RegisterUserRequest request);
 
   AuthResponse login(LoginRequest request);
 
   AuthResponse refresh(String refreshToken);
 
-  AuthResponse activateAccount(VerificationRequest request);
+  AuthResponse verifyAccount(VerificationRequest request);
 
-  void requestPasswordReset(ResetPasswordRequest request);
+  void requestPasswordReset(PasswordResetRequest request);
 
   void confirmPasswordReset(PasswordResetConfirmRequest request);
 }

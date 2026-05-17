@@ -127,7 +127,7 @@ public class MovieMapperImpl implements MovieMapper {
     return movie.getPhotos().stream()
         .filter(Photo::isCoverPhoto)
         .findFirst()
-        .map(Photo::getImageUrl)
+        .map(Photo::getImagePath)
         .orElse(null);
   }
 

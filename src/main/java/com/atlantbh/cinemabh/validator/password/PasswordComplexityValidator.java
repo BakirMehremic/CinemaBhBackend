@@ -1,5 +1,8 @@
 package com.atlantbh.cinemabh.validator.password;
 
+import static com.atlantbh.cinemabh.constant.AuthConstants.PASSWORD_MAX_LENGTH;
+import static com.atlantbh.cinemabh.constant.AuthConstants.PASSWORD_MIN_LENGTH;
+
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
@@ -15,7 +18,7 @@ public class PasswordComplexityValidator {
   private final PasswordValidator validator =
       new PasswordValidator(
           List.of(
-              new LengthRule(8, 48),
+              new LengthRule(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH),
               new CharacterRule(EnglishCharacterData.UpperCase, 1),
               new CharacterRule(EnglishCharacterData.LowerCase, 1),
               new CharacterRule(EnglishCharacterData.Digit, 1),

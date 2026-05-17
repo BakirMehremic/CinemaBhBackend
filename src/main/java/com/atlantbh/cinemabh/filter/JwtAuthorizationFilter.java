@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.filter;
 
+import com.atlantbh.cinemabh.dto.internal.TokenClaims;
 import com.atlantbh.cinemabh.service.CookieService;
 import com.atlantbh.cinemabh.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,18 +27,28 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
+    if (SecurityContextHolder.getContext().getAuthentication() != null) {
+      filterChain.doFilter(request, response);
+      return;
+    }
 
-    String token = cookieService.extractAccessToken(request);
+    Optional<String> token = cookieService.extractAccessToken(request);
 
-    if (token != null && jwtService.isTokenValid(token)) {
-      String role = jwtService.extractRole(token);
+    if (token.isEmpty()) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    String accessToken = token.get();
+
+    if (jwtService.isTokenValid(accessToken)) {
+      TokenClaims claims = jwtService.parseToken(accessToken);
 
       List<SimpleGrantedAuthority> authorities =
-          List.of(new SimpleGrantedAuthority("ROLE_" + role));
+          List.of(new SimpleGrantedAuthority("ROLE_" + claims.role()));
 
       UsernamePasswordAuthenticationToken auth =
-          new UsernamePasswordAuthenticationToken(
-              jwtService.extractUserId(token), null, authorities);
+          new UsernamePasswordAuthenticationToken(claims.userId(), null, authorities);
       SecurityContextHolder.getContext().setAuthentication(auth);
     }
 

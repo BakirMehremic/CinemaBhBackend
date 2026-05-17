@@ -1,10 +1,14 @@
 package com.atlantbh.cinemabh.entity;
 
+import static com.atlantbh.cinemabh.constant.AuthConstants.PASSWORD_HASH_LENGTH;
+
 import com.atlantbh.cinemabh.enums.UserRole;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,13 +19,14 @@ import org.hibernate.type.SqlTypes;
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
-  @Column(name = "role", columnDefinition = "user_role")
+  @Column(name = "role", nullable = false, columnDefinition = "user_role")
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   private UserRole userRole;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = PASSWORD_HASH_LENGTH)
   private String passwordHash;
 
   @Column(nullable = false)
@@ -38,11 +43,13 @@ public class User {
   @Column(unique = true, nullable = false)
   private String email;
 
-  @Column private String imageUrl;
+  @Column private String imagePath;
 
-  @Column private LocalDateTime createdAt;
+  @CreationTimestamp
+  @Column(nullable = false)
+  private LocalDateTime createdAt;
 
-  @Column(name = "is_verified", nullable = false)
+  @Column(nullable = false)
   private boolean verified;
 
   @ManyToOne(fetch = FetchType.LAZY)

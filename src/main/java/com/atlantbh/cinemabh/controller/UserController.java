@@ -4,12 +4,13 @@ import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
 import com.atlantbh.cinemabh.dto.response.MessageDataResponse;
 import com.atlantbh.cinemabh.dto.response.MessageResponse;
-import com.atlantbh.cinemabh.dto.response.UserPreviewResponse;
+import com.atlantbh.cinemabh.dto.response.UserDetailsResponse;
 import com.atlantbh.cinemabh.service.CookieService;
 import com.atlantbh.cinemabh.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
   private final UserService userService;
   private final CookieService cookieService;
 
   @PostMapping("/register")
-  public ResponseEntity<MessageDataResponse<UserPreviewResponse>> register(
+  public ResponseEntity<MessageDataResponse<UserDetailsResponse>> register(
       @Valid @RequestBody RegisterUserRequest request) {
-    UserPreviewResponse createdUser = userService.registerUser(request);
+    UserDetailsResponse createdUser = userService.registerUser(request);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(
@@ -37,7 +38,7 @@ public class UserController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<UserPreviewResponse> login(
+  public ResponseEntity<UserDetailsResponse> login(
       @Valid @RequestBody LoginRequest request, HttpServletResponse response) {
 
     AuthResponse authResponse = userService.login(request);
@@ -46,29 +47,36 @@ public class UserController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<UserPreviewResponse> refresh(
+  public ResponseEntity<UserDetailsResponse> refresh(
       HttpServletRequest request, HttpServletResponse response) {
+    Optional<String> refreshToken = cookieService.extractRefreshToken(request);
 
-    AuthResponse authResponse = userService.refresh(cookieService.extractRefreshToken(request));
+    if (refreshToken.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    AuthResponse authResponse = userService.refresh(refreshToken.get());
+
     cookieService.setTokenCookies(response, authResponse);
     return ResponseEntity.ok(authResponse.user());
   }
 
   @PostMapping("/verify")
-  public ResponseEntity<UserPreviewResponse> activateAccount(
+  public ResponseEntity<UserDetailsResponse> verifyAccount(
       HttpServletResponse response, @Valid @RequestBody VerificationRequest request) {
 
-    AuthResponse authResponse = userService.activateAccount(request);
+    AuthResponse authResponse = userService.verifyAccount(request);
     cookieService.setTokenCookies(response, authResponse);
     return ResponseEntity.ok(authResponse.user());
   }
 
-  @PostMapping("/password/reset")
+  @PostMapping("/password/reset/request")
   public ResponseEntity<MessageResponse> requestPasswordReset(
-      @Valid @RequestBody ResetPasswordRequest request) {
+      @Valid @RequestBody PasswordResetRequest request) {
 
     userService.requestPasswordReset(request);
-    return ResponseEntity.ok(new MessageResponse("Reset code sent to your email."));
+    return ResponseEntity.status(HttpStatus.ACCEPTED)
+        .body(new MessageResponse("Reset code sent to your email."));
   }
 
   @PostMapping("/password/reset/verify")

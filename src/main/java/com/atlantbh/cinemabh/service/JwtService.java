@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.service;
 
+import com.atlantbh.cinemabh.dto.internal.TokenClaims;
 import com.atlantbh.cinemabh.entity.User;
 
 public interface JwtService {
@@ -14,4 +15,6 @@ public interface JwtService {
   boolean isTokenValid(String token);
 
   boolean isTokenExpired(String token);
+
+  TokenClaims parseToken(String token);
 }

@@ -15,7 +15,7 @@ VALUES ('New York', 1),
        ('Tuzla', 4),
        ('Zenica', 4);
 
-INSERT INTO "venues" ("name", "street", "street_number", "phone", "image_url", "city_id")
+INSERT INTO "venues" ("name", "street", "street_number", "phone", "image_path", "city_id")
 VALUES ('Cineplex', 'Ulica Street', '2', '987-654-3210', 'https://ik.imagekit.io/4oxyrugmfe/cineplex.jpeg', 6),
        ('Meeting Point', 'Cinema St', '121', '987-654-3210', 'https://ik.imagekit.io/4oxyrugmfe/meeting.jpg', 7),
        ('Cinema City', 'Kino', '17', '987-654-3210', 'https://ik.imagekit.io/4oxyrugmfe/cinema-city.jpg', 7),

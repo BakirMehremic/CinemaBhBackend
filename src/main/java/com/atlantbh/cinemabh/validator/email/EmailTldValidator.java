@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.validator.email;
 
+import static com.atlantbh.cinemabh.constant.AuthConstants.IANA_URL;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @RequiredArgsConstructor
 class EmailTldValidator {
-  private static final String IANA_URL = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
   private final RestTemplate restTemplate;
   private Set<String> tldCache;
 

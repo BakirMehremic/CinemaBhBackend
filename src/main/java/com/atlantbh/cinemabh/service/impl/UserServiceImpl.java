@@ -2,11 +2,12 @@ package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
-import com.atlantbh.cinemabh.dto.response.UserPreviewResponse;
+import com.atlantbh.cinemabh.dto.response.UserDetailsResponse;
 import com.atlantbh.cinemabh.entity.City;
 import com.atlantbh.cinemabh.entity.User;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
+import com.atlantbh.cinemabh.enums.UserRole;
 import com.atlantbh.cinemabh.enums.VerificationType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
 import com.atlantbh.cinemabh.exception.UnauthorizedException;
@@ -18,9 +19,9 @@ import com.atlantbh.cinemabh.service.*;
 import com.atlantbh.cinemabh.validator.ImageUrlValidator;
 import com.atlantbh.cinemabh.validator.PhoneNumberValidator;
 import com.atlantbh.cinemabh.validator.ReservedNameValidator;
+import com.atlantbh.cinemabh.validator.email.EmailValidator;
 import com.atlantbh.cinemabh.validator.password.PasswordComplexityValidator;
 import com.atlantbh.cinemabh.validator.password.PwnedPasswordValidator;
-import java.awt.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,10 +44,12 @@ public class UserServiceImpl implements UserService {
   private final RefreshTokenService refreshTokenService;
   private final EmailSendingService emailSendingService;
   private final VerificationCodeService verificationCodeService;
+  private final EmailValidator emailValidator;
+  private final ReservedNameValidator reservedNameValidator;
 
   @Override
   @Transactional
-  public UserPreviewResponse registerUser(RegisterUserRequest request) {
+  public UserDetailsResponse registerUser(RegisterUserRequest request) {
     log.info(
         "{}",
         AuthEvent.builder(AuthEventType.REGISTER, AuthEventOutcome.IN_PROGRESS)
@@ -55,10 +58,11 @@ public class UserServiceImpl implements UserService {
             .build());
 
     passwordComplexityValidator.validate(request.password());
-    ReservedNameValidator.validate(request.firstName(), request.lastName());
+    reservedNameValidator.validate(request.firstName(), request.lastName());
     pwnedPasswordValidator.validatePasswordPwned(request.password());
     imageUrlValidator.validateImageUrl(request.imageUrl());
     String phoneNumberNormalized = phoneNumberValidator.validateAndNormalize(request.phoneNumber());
+    emailValidator.validateEmail(request.email());
 
     userRepository
         .findByEmailOrPhoneNumber(request.email(), phoneNumberNormalized)
@@ -84,13 +88,14 @@ public class UserServiceImpl implements UserService {
 
     City city =
         cityRepository
-            .findById(request.cityId())
+            .findById(request.address().cityId())
             .orElseThrow(
                 () -> {
                   log.warn(
                       "{}",
                       AuthEvent.builder(AuthEventType.REGISTER, AuthEventOutcome.FAILURE)
-                          .detail("User submitted nonexistent city id: " + request.cityId())
+                          .detail(
+                              "User submitted nonexistent city id: " + request.address().cityId())
                           .build());
 
                   return new InvalidRequestException("Nonexistent city id");
@@ -98,7 +103,12 @@ public class UserServiceImpl implements UserService {
 
     User user =
         userMapper.toEntity(
-            request, phoneNumberNormalized, city, passwordEncoder.encode(request.password()));
+            request,
+            phoneNumberNormalized,
+            city,
+            passwordEncoder.encode(request.password()),
+            UserRole.REGISTERED_USER,
+            false);
 
     User savedUser = userRepository.save(user);
 
@@ -114,7 +124,7 @@ public class UserServiceImpl implements UserService {
             .userId(savedUser.getId())
             .build());
 
-    return userMapper.toPreviewResponse(savedUser);
+    return userMapper.toDetailsResponse(savedUser);
   }
 
   @Override
@@ -173,7 +183,7 @@ public class UserServiceImpl implements UserService {
             .detail("Logged in")
             .build());
 
-    return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(user));
+    return new AuthResponse(jwtToken, refreshToken, userMapper.toDetailsResponse(user));
   }
 
   @Override
@@ -221,12 +231,12 @@ public class UserServiceImpl implements UserService {
             .detail("Succeeded refresh token validation")
             .build());
 
-    return new AuthResponse(jwtToken, refresh, userMapper.toPreviewResponse(user));
+    return new AuthResponse(jwtToken, refresh, userMapper.toDetailsResponse(user));
   }
 
   @Override
   @Transactional
-  public AuthResponse activateAccount(VerificationRequest request) {
+  public AuthResponse verifyAccount(VerificationRequest request) {
     log.info(
         "{}",
         AuthEvent.builder(AuthEventType.VERIFY_ACCOUNT, AuthEventOutcome.IN_PROGRESS)
@@ -279,12 +289,12 @@ public class UserServiceImpl implements UserService {
             .detail("Succeeded account verification")
             .build());
 
-    return new AuthResponse(jwtToken, refreshToken, userMapper.toPreviewResponse(user));
+    return new AuthResponse(jwtToken, refreshToken, userMapper.toDetailsResponse(user));
   }
 
   @Override
   @Transactional
-  public void requestPasswordReset(ResetPasswordRequest request) {
+  public void requestPasswordReset(PasswordResetRequest request) {
     log.info(
         "{}",
         AuthEvent.builder(AuthEventType.REQUEST_RESET_PASSWORD, AuthEventOutcome.IN_PROGRESS)
@@ -359,10 +369,20 @@ public class UserServiceImpl implements UserService {
 
     boolean isValid =
         verificationCodeService.isCodeValid(
-            request.code(), user.getId(), VerificationType.PASSWORD_RESET);
+            request.verificationCode(), user.getId(), VerificationType.PASSWORD_RESET);
 
     if (!isValid) {
       throw new InvalidRequestException("Invalid or expired reset code");
+    }
+
+    if (passwordEncoder.matches(request.newPassword(), user.getPasswordHash())) {
+      log.info(
+          "{}",
+          AuthEvent.builder(AuthEventType.CONFIRM_PASSWORD_RESET, AuthEventOutcome.FAILURE)
+              .email(request.email())
+              .detail("User tried to reset password which is same as the old one")
+              .build());
+      throw new InvalidRequestException("New password can not be same as the old one");
     }
 
     passwordComplexityValidator.validate(request.newPassword());

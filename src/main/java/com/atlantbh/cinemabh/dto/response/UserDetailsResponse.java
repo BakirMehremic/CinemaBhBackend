@@ -1,6 +1,6 @@
 package com.atlantbh.cinemabh.dto.response;
 
-public record UserPreviewResponse(
+public record UserDetailsResponse(
     Long id,
     String firstName,
     String lastName,
@@ -8,4 +8,4 @@ public record UserPreviewResponse(
     String phoneNumber,
     String imageUrl,
     String role,
-    Boolean verified) {}
+    boolean verified) {}

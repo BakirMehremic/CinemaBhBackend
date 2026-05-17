@@ -312,7 +312,7 @@ VALUES
 (16, 1);
 
 
-INSERT INTO photos (image_url, is_cover_photo, movie_id)
+INSERT INTO photos (image_path, is_cover_photo, movie_id)
 VALUES -- avengers
        ('https://ik.imagekit.io/4oxyrugmfe/avengers.jpg', true, 1),
 -- chase

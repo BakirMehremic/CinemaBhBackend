@@ -41,11 +41,11 @@ CREATE TABLE "users"
     "last_name"     VARCHAR(80)         NOT NULL,
     "phone_number"  VARCHAR(25) UNIQUE,
     "email"         VARCHAR(255) UNIQUE NOT NULL,
-    "street"        VARCHAR(50)         NOT NULL,
-    "image_url"     VARCHAR(255),
+    "street"        VARCHAR(150)        NOT NULL,
+    "image_path"    VARCHAR(255),
     "created_at"    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "city_id"       BIGINT,
-    "is_verified"   BOOLEAN   DEFAULT FALSE
+    "verified"      BOOLEAN   DEFAULT FALSE
 );
 
 CREATE TABLE "countries"
@@ -70,7 +70,7 @@ CREATE TABLE "venues"
     "street"        VARCHAR(100) NOT NULL,
     "street_number" VARCHAR(20),
     "phone"         VARCHAR(255),
-    "image_url"     VARCHAR(255) NOT NULL,
+    "image_path"    VARCHAR(255) NOT NULL,
     "city_id"       BIGINT       NOT NULL
 );
 
@@ -101,7 +101,7 @@ CREATE TABLE "movies"
 CREATE TABLE "photos"
 (
     "id"             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    "image_url"      VARCHAR(255) NOT NULL,
+    "image_path"     VARCHAR(255) NOT NULL,
     "is_cover_photo" BOOLEAN      NOT NULL,
     "movie_id"       BIGINT       NOT NULL
 );
@@ -168,8 +168,11 @@ CREATE TABLE "verification_codes"
     "id"         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "user_id"    BIGINT                              NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "expires_at" TIMESTAMP                           NOT NULL,
     "code_hash"  TEXT                                NOT NULL,
-    "type"       verification_type                   NOT NULL
+    "type"       verification_type                   NOT NULL,
+
+    UNIQUE ("user_id", "type")
 );
 
 CREATE TABLE "refresh_tokens"
@@ -177,7 +180,8 @@ CREATE TABLE "refresh_tokens"
     "id"         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "user_id"    BIGINT                              NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "token_hash" TEXT                                NOT NULL
+    "expires_at" TIMESTAMP                           NOT NULL,
+    "token_hash" TEXT                                NOT NULL UNIQUE
 );
 
 ALTER TABLE "verification_codes"

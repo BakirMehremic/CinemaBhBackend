@@ -1,34 +1,25 @@
 package com.atlantbh.cinemabh.validator;
 
+import com.atlantbh.cinemabh.config.ReservedNamesConfig;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
 import com.atlantbh.cinemabh.logging.AuthEvent;
 import java.util.Arrays;
-import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class ReservedNameValidator {
-  private static final Set<String> RESERVED_NAMES =
-      Set.of(
-          "root",
-          "guest",
-          "admin",
-          "administrator",
-          "info",
-          "support",
-          "no-reply",
-          "noreply",
-          "system",
-          "null",
-          "undefined",
-          "anonymous");
+  private final ReservedNamesConfig reservedNamesConfig;
 
-  public static void validate(String... inputs) {
+  public void validate(String... inputs) {
     Arrays.stream(inputs)
         .map(input -> input.trim().toLowerCase())
-        .filter(RESERVED_NAMES::contains)
+        .filter(reservedNamesConfig.getReservedNames()::contains)
         .findFirst()
         .ifPresent(
             invalid -> {
@@ -39,6 +30,5 @@ public class ReservedNameValidator {
                       .build());
               throw new InvalidRequestException(invalid + " is a reserved name.");
             });
-    ;
   }
 }

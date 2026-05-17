@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import com.atlantbh.cinemabh.dto.internal.TokenClaims;
 import com.atlantbh.cinemabh.entity.User;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
@@ -28,31 +29,23 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public String generateJwt(User user) {
-    log.info(
-        "{}",
-        AuthEvent.builder(AuthEventType.ISSUE_ACCESS_TOKEN, AuthEventOutcome.SUCCESS)
-            .userId(user.getId())
-            .build());
-    return Jwts.builder()
-        .claim("role", user.getUserRole().toString())
-        .subject(user.getId().toString())
-        .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(Date.from(Instant.now().plusSeconds(jwtExpirationMinutes * 60)))
-        .signWith(SignatureAlgorithm.HS256, secretKey)
-        .compact();
+    return buildToken(user, AuthEventType.ISSUE_ACCESS_TOKEN, jwtExpirationMinutes);
   }
 
   @Override
   public String generateRefreshToken(User user) {
+    return buildToken(user, AuthEventType.ISSUE_REFRESH_TOKEN, refreshExpirationMinutes);
+  }
+
+  private String buildToken(User user, AuthEventType eventType, long expirationMinutes) {
     log.info(
-        "{}",
-        AuthEvent.builder(AuthEventType.ISSUE_REFRESH_TOKEN, AuthEventOutcome.SUCCESS)
-            .userId(user.getId())
-            .build());
+        "{}", AuthEvent.builder(eventType, AuthEventOutcome.SUCCESS).userId(user.getId()).build());
+
     return Jwts.builder()
+        .claim("role", user.getUserRole().toString())
         .subject(user.getId().toString())
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(Date.from(Instant.now().plusSeconds(refreshExpirationMinutes * 60)))
+        .expiration(Date.from(Instant.now().plusSeconds(expirationMinutes * 60)))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
@@ -83,10 +76,20 @@ public class JwtServiceImpl implements JwtService {
   public boolean isTokenExpired(String token) {
     Claims claims = extractAllClaims(token);
     Date expiration = claims.getExpiration();
-    return expiration.before(new Date());
+    return expiration.before(new Date()) && isTokenValid(token);
   }
 
   private Claims extractAllClaims(String token) {
     return Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+  }
+
+  @Override
+  public TokenClaims parseToken(String token) {
+    Claims claims = Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+
+    return new TokenClaims(
+        Long.parseLong(claims.getSubject()),
+        claims.get("role", String.class),
+        claims.getExpiration());
   }
 }

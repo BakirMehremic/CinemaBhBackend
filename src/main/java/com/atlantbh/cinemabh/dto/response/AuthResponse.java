@@ -1,3 +1,4 @@
 package com.atlantbh.cinemabh.dto.response;
 
-public record AuthResponse(String accessToken, String refreshToken, UserPreviewResponse user) {}
+// TODO create class representing token
+public record AuthResponse(String accessToken, String refreshToken, UserDetailsResponse user) {}

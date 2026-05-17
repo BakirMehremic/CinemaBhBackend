@@ -30,7 +30,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
 
   @Query(
 """
-    SELECT v.id as id, v.name as name, v.imageUrl as imageUrl
+    SELECT v.id as id, v.name as name, v.imagePath as imageUrl
     FROM Venue v
     WHERE (:cityId IS NULL OR v.city.id=:cityId)
      AND (:name='' OR :name IS NULL OR LOWER(v.name) LIKE CONCAT('%', LOWER(:name), '%') ESCAPE '\\')
@@ -42,7 +42,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
 """
     SELECT v.id as id, v.name as name, v.street as street,
            v.streetNumber as streetNumber, v.phone as phone,
-           v.imageUrl as imageUrl, c.name as cityName
+           v.imagePath as imageUrl, c.name as cityName
     FROM Venue v
     JOIN v.city c
     WHERE v.id = :venueId
