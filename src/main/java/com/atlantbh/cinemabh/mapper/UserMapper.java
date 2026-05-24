@@ -16,4 +16,7 @@ public interface UserMapper {
       String passwordHash,
       UserRole role,
       boolean isVerified);
+
+  User toEntity(
+      RegisterUserRequest request, String passwordHash, UserRole role, boolean isVerified);
 }

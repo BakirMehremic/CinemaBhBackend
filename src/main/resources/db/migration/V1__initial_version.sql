@@ -41,7 +41,7 @@ CREATE TABLE "users"
     "last_name"     VARCHAR(80)         NOT NULL,
     "phone_number"  VARCHAR(25) UNIQUE,
     "email"         VARCHAR(255) UNIQUE NOT NULL,
-    "street"        VARCHAR(150)        NOT NULL,
+    "street"        VARCHAR(150),
     "image_path"    VARCHAR(255),
     "created_at"    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "city_id"       BIGINT,

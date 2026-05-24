@@ -1,12 +1,10 @@
 package com.atlantbh.cinemabh.controller;
 
 import com.atlantbh.cinemabh.dto.request.user.*;
-import com.atlantbh.cinemabh.dto.response.AuthResponse;
-import com.atlantbh.cinemabh.dto.response.MessageDataResponse;
-import com.atlantbh.cinemabh.dto.response.MessageResponse;
-import com.atlantbh.cinemabh.dto.response.UserDetailsResponse;
+import com.atlantbh.cinemabh.dto.response.*;
 import com.atlantbh.cinemabh.service.CookieService;
 import com.atlantbh.cinemabh.service.UserService;
+import com.atlantbh.cinemabh.util.AuthUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -27,23 +25,26 @@ public class UserController {
   private final CookieService cookieService;
 
   @PostMapping("/register")
-  public ResponseEntity<MessageDataResponse<UserDetailsResponse>> register(
+  public ResponseEntity<ResendAtResponse<MessageDataResponse<UserDetailsResponse>>> register(
       @Valid @RequestBody RegisterUserRequest request) {
     UserDetailsResponse createdUser = userService.registerUser(request);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(
-            new MessageDataResponse<>(
-                "Registration successful, please verify your account via email.", createdUser));
+            new ResendAtResponse<>(
+                new MessageDataResponse<>(
+                    "Registration successful, please verify your account via email.", createdUser),
+                AuthUtils.getResendAt()));
   }
 
   @PostMapping("/login")
-  public ResponseEntity<UserDetailsResponse> login(
+  public ResponseEntity<ResendAtResponse<UserDetailsResponse>> login(
       @Valid @RequestBody LoginRequest request, HttpServletResponse response) {
 
     AuthResponse authResponse = userService.login(request);
     cookieService.setTokenCookies(response, authResponse);
-    return ResponseEntity.ok(authResponse.user());
+
+    return ResponseEntity.ok(new ResendAtResponse<>(authResponse.user(), AuthUtils.getResendAt()));
   }
 
   @PostMapping("/refresh")
@@ -86,5 +87,23 @@ public class UserController {
 
     return ResponseEntity.ok(
         new MessageResponse("Password has been reset successfully, you can now log in."));
+  }
+
+  @PostMapping("/verify/resend")
+  public ResponseEntity<ResendAtResponse<MessageResponse>> resendAccountVerificationCode(
+      @Valid @RequestBody ResendAccountVerificationRequest request) {
+    userService.resendAccountVerificationCode(request);
+
+    return ResponseEntity.ok(
+        new ResendAtResponse<>(
+            new MessageResponse("A new verification code was sent to your email."),
+            AuthUtils.getResendAt()));
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<MessageResponse> logout(HttpServletResponse response) {
+    cookieService.clearTokenCookies(response);
+
+    return ResponseEntity.ok(new MessageResponse("Logout successful."));
   }
 }

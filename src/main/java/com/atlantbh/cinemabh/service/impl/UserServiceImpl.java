@@ -3,7 +3,6 @@ package com.atlantbh.cinemabh.service.impl;
 import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
 import com.atlantbh.cinemabh.dto.response.UserDetailsResponse;
-import com.atlantbh.cinemabh.entity.City;
 import com.atlantbh.cinemabh.entity.User;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
@@ -60,55 +59,24 @@ public class UserServiceImpl implements UserService {
     passwordComplexityValidator.validate(request.password());
     reservedNameValidator.validate(request.firstName(), request.lastName());
     pwnedPasswordValidator.validatePasswordPwned(request.password());
-    imageUrlValidator.validateImageUrl(request.imageUrl());
-    String phoneNumberNormalized = phoneNumberValidator.validateAndNormalize(request.phoneNumber());
     emailValidator.validateEmail(request.email());
 
     userRepository
-        .findByEmailOrPhoneNumber(request.email(), phoneNumberNormalized)
+        .findByEmail(request.email())
         .ifPresent(
             user -> {
-              if (user.getEmail().equals(request.email())) {
-                log.info(
-                    "{}",
-                    AuthEvent.builder(AuthEventType.REGISTER, AuthEventOutcome.FAILURE)
-                        .email(request.email())
-                        .detail("User submitted an email which is in use")
-                        .build());
-                throw new InvalidRequestException("Email already taken");
-              }
               log.info(
                   "{}",
                   AuthEvent.builder(AuthEventType.REGISTER, AuthEventOutcome.FAILURE)
-                      .phoneNumber(request.phoneNumber())
-                      .detail("User submitted a phone number which is in use")
+                      .email(request.email())
+                      .detail("User submitted an email which is in use")
                       .build());
-              throw new InvalidRequestException("Phone number already taken");
+              throw new InvalidRequestException("Email already taken");
             });
-
-    City city =
-        cityRepository
-            .findById(request.address().cityId())
-            .orElseThrow(
-                () -> {
-                  log.warn(
-                      "{}",
-                      AuthEvent.builder(AuthEventType.REGISTER, AuthEventOutcome.FAILURE)
-                          .detail(
-                              "User submitted nonexistent city id: " + request.address().cityId())
-                          .build());
-
-                  return new InvalidRequestException("Nonexistent city id");
-                });
 
     User user =
         userMapper.toEntity(
-            request,
-            phoneNumberNormalized,
-            city,
-            passwordEncoder.encode(request.password()),
-            UserRole.REGISTERED_USER,
-            false);
+            request, passwordEncoder.encode(request.password()), UserRole.REGISTERED_USER, false);
 
     User savedUser = userRepository.save(user);
 
@@ -327,8 +295,21 @@ public class UserServiceImpl implements UserService {
       throw new UnauthorizedException("Please verify your account");
     }
 
+    if (verificationCodeService.isCodeSentAndValid(user.getId(), VerificationType.PASSWORD_RESET)) {
+      log.warn(
+          "{}",
+          AuthEvent.builder(AuthEventType.REQUEST_RESET_PASSWORD, AuthEventOutcome.FAILURE)
+              .email(request.email())
+              .detail("User requested password reset multiple times")
+              .build());
+      throw new InvalidRequestException("You already requested a password reset code");
+    }
+
     String verificationCode =
         verificationCodeService.generateAndSaveCode(user.getId(), VerificationType.PASSWORD_RESET);
+
+    emailSendingService.sendVerificationEmail(
+        user.getEmail(), "Password reset verification code", verificationCode);
 
     log.info(
         "{}",
@@ -337,9 +318,6 @@ public class UserServiceImpl implements UserService {
             .email(user.getEmail())
             .detail("Succeeded request for password reset, code sent to email")
             .build());
-
-    emailSendingService.sendVerificationEmail(
-        user.getEmail(), "Password reset verification code", verificationCode);
   }
 
   @Override
@@ -397,6 +375,63 @@ public class UserServiceImpl implements UserService {
             .email(request.email())
             .userId(user.getId())
             .detail("Succeeded confirm password reset")
+            .build());
+  }
+
+  @Override
+  public void resendAccountVerificationCode(ResendAccountVerificationRequest request) {
+    log.info(
+        "{}",
+        AuthEvent.builder(AuthEventType.RESEND_ACCOUNT_VERIFICATION, AuthEventOutcome.IN_PROGRESS)
+            .email(request.email())
+            .detail("Initialized resend account verification code")
+            .build());
+
+    User user =
+        userRepository
+            .findByEmail(request.email())
+            .orElseThrow(
+                () -> {
+                  log.info(
+                      "{}",
+                      AuthEvent.builder(
+                              AuthEventType.RESEND_ACCOUNT_VERIFICATION, AuthEventOutcome.FAILURE)
+                          .email(request.email())
+                          .detail("User tried to resend verification code for nonexistent email")
+                          .build());
+                  return new InvalidRequestException("Invalid email");
+                });
+
+    if (user.isVerified()) {
+      log.info(
+          "{}",
+          AuthEvent.builder(AuthEventType.RESEND_ACCOUNT_VERIFICATION, AuthEventOutcome.FAILURE)
+              .email(request.email())
+              .detail("User tried to resend verification code for a verified account")
+              .build());
+      throw new InvalidRequestException("Your account is verified");
+    }
+
+    if (verificationCodeService.isCodeSentAndValid(user.getId(), VerificationType.REGISTER)) {
+      log.info(
+          "{}",
+          AuthEvent.builder(AuthEventType.RESEND_ACCOUNT_VERIFICATION, AuthEventOutcome.FAILURE)
+              .email(request.email())
+              .detail("User tried to resend verification code while a valid one exists")
+              .build());
+      throw new InvalidRequestException("Please check your email, a code was already sent");
+    }
+
+    String verificationCode =
+        verificationCodeService.generateAndSaveCode(user.getId(), VerificationType.REGISTER);
+
+    emailSendingService.sendVerificationEmail(
+        user.getEmail(), "Email verification code", verificationCode);
+
+    log.info(
+        "{}",
+        AuthEvent.builder(AuthEventType.RESEND_ACCOUNT_VERIFICATION, AuthEventOutcome.SUCCESS)
+            .userId(user.getId())
             .build());
   }
 }

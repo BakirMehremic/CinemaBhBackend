@@ -1,8 +1,9 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import static com.atlantbh.cinemabh.constant.RateLimitConstants.VERIFICATION_CODES_RESEND_LIMIT_SECONDS;
 import static com.atlantbh.cinemabh.util.HashingUtils.toSha256;
 
-import com.atlantbh.cinemabh.entity.User;
+import com.atlantbh.cinemabh.config.properties.VerificationProperties;
 import com.atlantbh.cinemabh.entity.VerificationCode;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +29,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
   private final SecureRandom secureRandom = new SecureRandom();
   private final VerificationCodeRepository verificationCodeRepository;
   private final UserRepository userRepository;
-
-  @Value("${verification.expiration-minutes}")
-  private int expirationMinutes;
+  private final VerificationProperties verificationProperties;
 
   private String generateSixDigitCode() {
     return IntStream.range(0, 6)
@@ -43,14 +41,21 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
   @Transactional
   public String generateAndSaveCode(Long userId, VerificationType type) {
     String code = generateSixDigitCode();
-    User user = userRepository.getReferenceById(userId);
 
-    VerificationCode codeEntity = new VerificationCode();
+    VerificationCode codeEntity =
+        verificationCodeRepository
+            .findByUserIdAndVerificationType(userId, type)
+            .orElseGet(VerificationCode::new);
+
+    if (codeEntity.getId() == null) {
+      codeEntity.setUser(userRepository.getReferenceById(userId));
+      codeEntity.setVerificationType(type);
+    }
+
     codeEntity.setCodeHash(toSha256(code));
-    codeEntity.setUser(user);
-    codeEntity.setVerificationType(type);
     codeEntity.setCreatedAt(LocalDateTime.now());
-    codeEntity.setExpiresAt(LocalDateTime.now().plusMinutes(expirationMinutes));
+    codeEntity.setExpiresAt(
+        LocalDateTime.now().plusMinutes(verificationProperties.getExpirationMinutes()));
 
     verificationCodeRepository.save(codeEntity);
 
@@ -59,6 +64,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         AuthEvent.builder(AuthEventType.ISSUE_CODE, AuthEventOutcome.SUCCESS)
             .userId(userId)
             .build());
+
     return code;
   }
 
@@ -94,6 +100,24 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         AuthEvent.builder(AuthEventType.VALIDATE_CODE, AuthEventOutcome.SUCCESS)
             .userId(userId)
             .build());
+    return true;
+  }
+
+  @Override
+  public boolean isCodeSentAndValid(Long userId, VerificationType type) {
+    Optional<VerificationCode> verificationCode =
+        verificationCodeRepository.findByUserIdAndVerificationType(userId, type);
+
+    if (verificationCode.isEmpty()) {
+      return false;
+    }
+
+    LocalDateTime cutoffTime =
+        LocalDateTime.now().minusSeconds(VERIFICATION_CODES_RESEND_LIMIT_SECONDS);
+
+    if (verificationCode.get().getCreatedAt().isBefore(cutoffTime)) {
+      return false;
+    }
     return true;
   }
 }

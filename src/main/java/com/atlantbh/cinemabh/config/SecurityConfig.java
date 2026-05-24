@@ -1,6 +1,8 @@
 package com.atlantbh.cinemabh.config;
 
+import com.atlantbh.cinemabh.config.properties.CookieProperties;
 import com.atlantbh.cinemabh.filter.JwtAuthorizationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,7 +18,10 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+  private final CookieProperties cookieProperties;
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -30,7 +35,7 @@ public class SecurityConfig {
         cookie -> {
           cookie.path("/");
           cookie.sameSite("Lax");
-          cookie.secure(true);
+          cookie.secure(cookieProperties.isSecure());
         });
 
     http.csrf(

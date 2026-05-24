@@ -1,10 +1,17 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import com.atlantbh.cinemabh.config.properties.ResendProperties;
+import com.atlantbh.cinemabh.enums.AuthEventOutcome;
+import com.atlantbh.cinemabh.enums.AuthEventType;
+import com.atlantbh.cinemabh.exception.ServiceUnavailableException;
+import com.atlantbh.cinemabh.logging.AuthEvent;
 import com.atlantbh.cinemabh.service.EmailSendingService;
 import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -12,20 +19,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailSendingServiceImpl implements EmailSendingService {
   private final Resend resend;
-
-  @Value("${resend.from-email}")
-  private String fromEmail;
+  private final ResendProperties resendProperties;
 
   @Override
   public void sendVerificationEmail(String recipient, String subject, String code) {
-        log.warn("code is {}", code);
+    log.warn("code is {}", code);
     return; // uncomment later
-/*    String htmlBody =
+    /*String htmlBody =
         "<h1>Verification Code</h1>" + "<h2>Your code is: <strong>" + code + "</strong></h2>";
 
     CreateEmailOptions params =
         CreateEmailOptions.builder()
-            .from(fromEmail)
+            .from(resendProperties.getFromEmail())
             .to(recipient)
             .subject(subject)
             .html(htmlBody)

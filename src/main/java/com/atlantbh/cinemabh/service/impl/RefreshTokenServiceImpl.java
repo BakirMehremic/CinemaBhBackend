@@ -2,6 +2,7 @@ package com.atlantbh.cinemabh.service.impl;
 
 import static com.atlantbh.cinemabh.util.HashingUtils.toSha256;
 
+import com.atlantbh.cinemabh.config.properties.JwtProperties;
 import com.atlantbh.cinemabh.entity.RefreshToken;
 import com.atlantbh.cinemabh.entity.User;
 import com.atlantbh.cinemabh.repository.RefreshTokenRepository;
@@ -10,7 +11,6 @@ import com.atlantbh.cinemabh.service.JwtService;
 import com.atlantbh.cinemabh.service.RefreshTokenService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +20,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final JwtService jwtService;
   private final UserRepository userRepository;
-
-  @Value("${application.security.jwt.refresh-token-expiration-min}")
-  private int expirationMinutes;
+  private final JwtProperties jwtProperties;
 
   @Override
   @Transactional
@@ -36,7 +34,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     tokenEntity.setUser(user);
     tokenEntity.setTokenHash(toSha256(token));
     tokenEntity.setCreatedAt(LocalDateTime.now());
-    tokenEntity.setExpiresAt(LocalDateTime.now().plusMinutes(expirationMinutes));
+    tokenEntity.setExpiresAt(
+        LocalDateTime.now().plusMinutes(jwtProperties.getRefreshTokenExpirationMin()));
 
     refreshTokenRepository.save(tokenEntity);
   }

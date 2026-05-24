@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.service.impl;
 
+import com.atlantbh.cinemabh.config.properties.JwtProperties;
 import com.atlantbh.cinemabh.dto.internal.TokenClaims;
 import com.atlantbh.cinemabh.entity.User;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
@@ -11,30 +12,26 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.time.Instant;
 import java.util.Date;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
-  @Value("${application.security.jwt.secret-key}")
-  private String secretKey;
-
-  @Value("${application.security.jwt.expiration-min}")
-  private long jwtExpirationMinutes;
-
-  @Value("${application.security.jwt.refresh-token-expiration-min}")
-  private long refreshExpirationMinutes;
+  private final JwtProperties jwtProperties;
 
   @Override
   public String generateJwt(User user) {
-    return buildToken(user, AuthEventType.ISSUE_ACCESS_TOKEN, jwtExpirationMinutes);
+    return buildToken(
+        user, AuthEventType.ISSUE_ACCESS_TOKEN, jwtProperties.getAccessTokenExpirationMin());
   }
 
   @Override
   public String generateRefreshToken(User user) {
-    return buildToken(user, AuthEventType.ISSUE_REFRESH_TOKEN, refreshExpirationMinutes);
+    return buildToken(
+        user, AuthEventType.ISSUE_REFRESH_TOKEN, jwtProperties.getRefreshTokenExpirationMin());
   }
 
   private String buildToken(User user, AuthEventType eventType, long expirationMinutes) {
@@ -46,7 +43,7 @@ public class JwtServiceImpl implements JwtService {
         .subject(user.getId().toString())
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(Date.from(Instant.now().plusSeconds(expirationMinutes * 60)))
-        .signWith(SignatureAlgorithm.HS256, secretKey)
+        .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
         .compact();
   }
 
@@ -80,12 +77,21 @@ public class JwtServiceImpl implements JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+    return Jwts.parser()
+        .setSigningKey(jwtProperties.getSecretKey())
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
   }
 
   @Override
   public TokenClaims parseToken(String token) {
-    Claims claims = Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+    Claims claims =
+        Jwts.parser()
+            .setSigningKey(jwtProperties.getSecretKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
 
     return new TokenClaims(
         Long.parseLong(claims.getSubject()),

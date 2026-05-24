@@ -36,9 +36,22 @@ public class UserMapperImpl implements UserMapper {
     user.setLastName(request.lastName());
     user.setEmail(request.email());
     user.setPhoneNumber(phoneNumberNormalized);
-    user.setImagePath(request.imageUrl());
-    user.setStreet(request.address().street());
+    /*    user.setImagePath(request.imageUrl());
+    user.setStreet(request.address().street());*/
     user.setCity(city);
+    user.setUserRole(role);
+    user.setPasswordHash(passwordHash);
+    user.setVerified(isVerified);
+    return user;
+  }
+
+  @Override
+  public User toEntity(
+      RegisterUserRequest request, String passwordHash, UserRole role, boolean isVerified) {
+    User user = new User();
+    user.setFirstName(request.firstName());
+    user.setLastName(request.lastName());
+    user.setEmail(request.email());
     user.setUserRole(role);
     user.setPasswordHash(passwordHash);
     user.setVerified(isVerified);

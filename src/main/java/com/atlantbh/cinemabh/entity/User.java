@@ -35,8 +35,7 @@ public class User {
   @Column(nullable = false)
   private String lastName;
 
-  @Column(nullable = false)
-  private String street;
+  @Column private String street;
 
   @Column private String phoneNumber;
 
@@ -53,6 +52,6 @@ public class User {
   private boolean verified;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "city_id", nullable = false)
+  @JoinColumn(name = "city_id")
   private City city;
 }

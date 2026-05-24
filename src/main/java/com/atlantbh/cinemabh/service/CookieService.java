@@ -13,4 +13,6 @@ public interface CookieService {
   Optional<String> extractAccessToken(HttpServletRequest request);
 
   Long extractUserId(HttpServletRequest request);
+
+  void clearTokenCookies(HttpServletResponse response);
 }

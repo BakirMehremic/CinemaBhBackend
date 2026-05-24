@@ -3,6 +3,8 @@ package com.atlantbh.cinemabh.service.impl;
 import static com.atlantbh.cinemabh.constant.AuthConstants.ACCESS_TOKEN_NAME;
 import static com.atlantbh.cinemabh.constant.AuthConstants.REFRESH_TOKEN_NAME;
 
+import com.atlantbh.cinemabh.config.properties.CookieProperties;
+import com.atlantbh.cinemabh.config.properties.JwtProperties;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
 import com.atlantbh.cinemabh.service.CookieService;
 import com.atlantbh.cinemabh.service.JwtService;
@@ -12,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -21,33 +22,26 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CookieServiceImpl implements CookieService {
   private final JwtService jwtService;
-
-  @Value("${application.security.jwt.expiration-min}")
-  private long jwtExpirationMinutes;
-
-  @Value("${application.security.jwt.refresh-token-expiration-min}")
-  private long refreshExpirationMinutes;
-
-  @Value("${app.cookies.secure}")
-  private boolean secureCookies;
+  private final JwtProperties jwtProperties;
+  private final CookieProperties cookieProperties;
 
   @Override
   public void setTokenCookies(HttpServletResponse response, AuthResponse auth) {
     ResponseCookie accessCookie =
         ResponseCookie.from(ACCESS_TOKEN_NAME, auth.accessToken())
             .httpOnly(true)
-            .secure(secureCookies)
+            .secure(cookieProperties.isSecure())
             .path("/")
-            .maxAge(jwtExpirationMinutes * 60)
+            .maxAge(jwtProperties.getAccessTokenExpirationMin() * 60)
             .sameSite("Strict")
             .build();
 
     ResponseCookie refreshCookie =
         ResponseCookie.from(REFRESH_TOKEN_NAME, auth.refreshToken())
             .httpOnly(true)
-            .secure(secureCookies)
+            .secure(cookieProperties.isSecure())
             .path("/")
-            .maxAge(refreshExpirationMinutes * 60)
+            .maxAge(jwtProperties.getRefreshTokenExpirationMin() * 60)
             .sameSite("Strict")
             .build();
 
@@ -74,6 +68,23 @@ public class CookieServiceImpl implements CookieService {
     String token = getCookieValue(request, ACCESS_TOKEN_NAME);
 
     return jwtService.extractUserId(token);
+  }
+
+  @Override
+  public void clearTokenCookies(HttpServletResponse response) {
+    Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, "");
+    accessTokenCookie.setHttpOnly(true);
+    accessTokenCookie.setSecure(cookieProperties.isSecure());
+    accessTokenCookie.setPath("/");
+    accessTokenCookie.setMaxAge(0);
+    response.addCookie(accessTokenCookie);
+
+    Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, "");
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setSecure(cookieProperties.isSecure());
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge(0);
+    response.addCookie(refreshTokenCookie);
   }
 
   private String getCookieValue(HttpServletRequest request, String name) {

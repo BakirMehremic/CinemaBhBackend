@@ -16,4 +16,6 @@ public interface UserService {
   void requestPasswordReset(PasswordResetRequest request);
 
   void confirmPasswordReset(PasswordResetConfirmRequest request);
+
+  void resendAccountVerificationCode(ResendAccountVerificationRequest request);
 }

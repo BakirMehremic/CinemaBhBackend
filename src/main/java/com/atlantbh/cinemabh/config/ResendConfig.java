@@ -1,24 +1,18 @@
 package com.atlantbh.cinemabh.config;
 
+import com.atlantbh.cinemabh.config.properties.ResendProperties;
 import com.resend.Resend;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class ResendConfig {
-  private final String resendApiKey;
-
-  public ResendConfig(@Value("${resend.api-key}") String resendApiKey) {
-    if (resendApiKey == null || resendApiKey.isBlank()) {
-      throw new IllegalArgumentException(
-          "Resend API key must not be null or empty. Check application.properties or .env");
-    }
-    this.resendApiKey = resendApiKey;
-  }
+  private final ResendProperties resendProperties;
 
   @Bean
   public Resend resend() {
-    return new Resend(resendApiKey);
+    return new Resend(resendProperties.getApiKey());
   }
 }

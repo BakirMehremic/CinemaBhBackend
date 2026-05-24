@@ -13,4 +13,7 @@ public interface VerificationCodeRepository extends JpaRepository<VerificationCo
       Long userId, String codeHash, VerificationType verificationType);
 
   int deleteByCreatedAtBefore(LocalDateTime threshold);
+
+  Optional<VerificationCode> findByUserIdAndVerificationType(
+      Long userId, VerificationType verificationType);
 }

@@ -1,10 +1,10 @@
 package com.atlantbh.cinemabh.schedule;
 
+import com.atlantbh.cinemabh.config.properties.VerificationProperties;
 import com.atlantbh.cinemabh.repository.VerificationCodeRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,14 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleVerificationCleanup {
   private final VerificationCodeRepository repository;
-
-  @Value("${verification.expiration-minutes}")
-  private int expirationMinutes;
+  private final VerificationProperties verificationProperties;
 
   @Transactional
   @Scheduled(fixedRateString = "${verification.schedule-delete-ms}")
   public void cleanupExpiredCodes() {
-    LocalDateTime threshold = LocalDateTime.now().minusMinutes(expirationMinutes);
+    LocalDateTime threshold =
+        LocalDateTime.now().minusMinutes(verificationProperties.getExpirationMinutes());
 
     int deleted = repository.deleteByCreatedAtBefore(threshold);
 
