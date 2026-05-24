@@ -38,13 +38,13 @@ public class UserController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<ResendAtResponse<UserDetailsResponse>> login(
+  public ResponseEntity<UserDetailsResponse> login(
       @Valid @RequestBody LoginRequest request, HttpServletResponse response) {
 
     AuthResponse authResponse = userService.login(request);
     cookieService.setTokenCookies(response, authResponse);
 
-    return ResponseEntity.ok(new ResendAtResponse<>(authResponse.user(), AuthUtils.getResendAt()));
+    return ResponseEntity.ok(authResponse.user());
   }
 
   @PostMapping("/refresh")
