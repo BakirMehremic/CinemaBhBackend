@@ -2,6 +2,7 @@ package com.atlantbh.cinemabh.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import lombok.Setter;
 public class Projection {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Column(nullable = false)

@@ -18,7 +18,7 @@ public class VenueMapperImpl implements VenueMapper {
         venue.getStreet(),
         venue.getStreetNumber(),
         venue.getCity().getName(),
-        venue.getImageUrl());
+        venue.getImagePath());
   }
 
   @Override

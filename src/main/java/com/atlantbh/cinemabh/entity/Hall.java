@@ -3,6 +3,7 @@ package com.atlantbh.cinemabh.entity;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 public class Hall {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Column private String name;

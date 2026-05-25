@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,10 +20,11 @@ import lombok.Setter;
 public class Photo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Column(nullable = false)
-  private String imageUrl;
+  private String imagePath;
 
   @Column(name = "is_cover_photo", nullable = false)
   private boolean coverPhoto;

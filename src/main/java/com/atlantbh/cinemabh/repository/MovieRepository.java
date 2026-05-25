@@ -34,7 +34,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
       value =
 """
     SELECT m.id, m.name, m.pg_rating as pgRating, m.language, m.duration_minutes as durationMinutes,
-              m.end_showing_date as endShowingDate, p.image_url as imageUrl,
+              m.end_showing_date as endShowingDate, p.image_path as imageUrl,
               prj.startTimes, gen.genres
     FROM movies m
     LEFT JOIN photos p
@@ -97,7 +97,7 @@ AND m.moviePublishedStatus=PUBLISHED
       value =
 """
     SELECT m.id, m.name, m.duration_minutes as durationMinutes,
-     p.image_url as coverPhotoUrl, gen.genres, m.start_showing_date as opensDate
+     p.image_path as coverPhotoUrl, gen.genres, m.start_showing_date as opensDate
     FROM movies m
     JOIN photos p
     ON p.movie_id=m.id AND p.is_cover_photo=true
