@@ -84,7 +84,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
       return false;
     }
 
-    if (storedCode.get().getExpiresAt().isAfter(LocalDateTime.now())) {
+    if (storedCode.get().getExpiresAt().isBefore(LocalDateTime.now())) {
       log.info(
           "{}",
           AuthEvent.builder(AuthEventType.VALIDATE_CODE, AuthEventOutcome.FAILURE)

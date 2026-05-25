@@ -4,23 +4,30 @@ import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.AuthResponse;
 import com.atlantbh.cinemabh.dto.response.UserDetailsResponse;
 import com.atlantbh.cinemabh.entity.User;
+import com.atlantbh.cinemabh.entity.VerificationCode;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
 import com.atlantbh.cinemabh.enums.UserRole;
 import com.atlantbh.cinemabh.enums.VerificationType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
 import com.atlantbh.cinemabh.exception.UnauthorizedException;
+import com.atlantbh.cinemabh.exception.UserNotVerifiedException;
 import com.atlantbh.cinemabh.logging.AuthEvent;
 import com.atlantbh.cinemabh.mapper.UserMapper;
 import com.atlantbh.cinemabh.repository.CityRepository;
 import com.atlantbh.cinemabh.repository.UserRepository;
+import com.atlantbh.cinemabh.repository.VerificationCodeRepository;
 import com.atlantbh.cinemabh.service.*;
+import com.atlantbh.cinemabh.util.AuthUtils;
 import com.atlantbh.cinemabh.validator.ImageUrlValidator;
 import com.atlantbh.cinemabh.validator.PhoneNumberValidator;
 import com.atlantbh.cinemabh.validator.ReservedNameValidator;
 import com.atlantbh.cinemabh.validator.email.EmailValidator;
 import com.atlantbh.cinemabh.validator.password.PasswordComplexityValidator;
 import com.atlantbh.cinemabh.validator.password.PwnedPasswordValidator;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final CityRepository cityRepository;
+  private final VerificationCodeRepository verificationCodeRepository;
   private final PasswordComplexityValidator passwordComplexityValidator;
   private final PwnedPasswordValidator pwnedPasswordValidator;
   private final PhoneNumberValidator phoneNumberValidator;
@@ -136,7 +144,20 @@ public class UserServiceImpl implements UserService {
               .email(request.email())
               .detail("User tried to login with unverified account")
               .build());
-      throw new UnauthorizedException("Please verify your account");
+
+      Optional<VerificationCode> existingCode =
+          verificationCodeRepository.findByUserIdAndVerificationType(
+              user.getId(), VerificationType.REGISTER);
+
+      Instant resendAllowedAt =
+          existingCode
+              .map(
+                  code ->
+                      AuthUtils.getResendAt(
+                          code.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()))
+              .orElseGet(Instant::now);
+
+      throw new UserNotVerifiedException("Please verify your account", resendAllowedAt);
     }
 
     String jwtToken = jwtService.generateJwt(user);

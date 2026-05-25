@@ -30,6 +30,9 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, JwtAuthorizationFilter jwtAuthorizationFilter) throws Exception {
+    CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+    requestHandler.setCsrfRequestAttributeName(null); // sends csrf cookie on get requests too
+
     CookieCsrfTokenRepository csrfRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
     csrfRepository.setCookieCustomizer(
         cookie -> {
@@ -40,8 +43,7 @@ public class SecurityConfig {
 
     http.csrf(
             csrf ->
-                csrf.csrfTokenRepository(csrfRepository)
-                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+                csrf.csrfTokenRepository(csrfRepository).csrfTokenRequestHandler(requestHandler))
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,6 +1,7 @@
 package com.atlantbh.cinemabh.exception;
 
 import com.atlantbh.cinemabh.dto.response.ErrorResponse;
+import com.atlantbh.cinemabh.dto.response.UserVerificationErrorResponse;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,5 +66,15 @@ public class ExceptionResponseHandler {
   @ExceptionHandler(AuthorizationDeniedException.class)
   public ResponseEntity<ErrorResponse> handleForbidden(AuthorizationDeniedException ex) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(ex.getMessage()));
+  }
+
+  @ExceptionHandler(UserNotVerifiedException.class)
+  public ResponseEntity<UserVerificationErrorResponse> handleUserNotVerified(UserNotVerifiedException ex) {
+    UserVerificationErrorResponse errorResponseBody = new UserVerificationErrorResponse(
+            ex.getMessage(),
+            ex.getResendVerificationCodeAt()
+    );
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponseBody);
   }
 }

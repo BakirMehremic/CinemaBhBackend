@@ -8,4 +8,8 @@ public final class AuthUtils {
   public static Instant getResendAt() {
     return Instant.now().plusSeconds(VERIFICATION_CODES_RESEND_LIMIT_SECONDS);
   }
+
+  public static Instant getResendAt(Instant createdAt) {
+    return createdAt.plusSeconds(VERIFICATION_CODES_RESEND_LIMIT_SECONDS);
+  }
 }
