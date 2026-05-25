@@ -10,6 +10,7 @@ import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.exception.NotFoundException;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
 import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
+import com.atlantbh.cinemabh.projection.MoviePreviewProjection;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
@@ -70,7 +71,7 @@ public class MovieServiceImpl implements MovieService {
   }
 
   @Override
-  public Page<MovieShowingProjection> getMoviePreviewsPaginatedByVenueId(
+  public Page<MoviePreviewProjection> getMoviePreviewsPaginatedByVenueId(
       FilterMovieByVenueIdRequest filter) {
     Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 

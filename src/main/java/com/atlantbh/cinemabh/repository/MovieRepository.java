@@ -2,6 +2,7 @@ package com.atlantbh.cinemabh.repository;
 
 import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
+import com.atlantbh.cinemabh.projection.MoviePreviewProjection;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import java.time.LocalDate;
@@ -85,12 +86,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
   @Query(
       value =
           """
-          SELECT m.id, m.name, m.pg_rating, m.language, m.duration_minutes,
-                           m.end_showing_date, ph.image_path as imageUrl, prj.startTimes, gen.genres
+          SELECT m.name, m.id, m.pg_rating, m.language, m.duration_minutes,
+                 ph.image_path as coverPhotoUrl, m.synopsis, gen.genres
           FROM movies m
-          JOIN projections p ON p.movie_id = m.id
-          JOIN halls h ON h.id = p.hall_id
-          JOIN venues v ON v.id = h.venue_id
           LEFT JOIN photos ph
             ON ph.movie_id=m.id AND ph.is_cover_photo=true
           LEFT JOIN (
@@ -100,32 +98,31 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             JOIN genres g ON g.id=mg.genre_id
             GROUP BY mg.movie_id
           ) gen ON gen.movie_id = m.id
-          JOIN (
-                SELECT pr.movie_id, json_agg(pr.start_time ORDER BY pr.start_time) AS startTimes
-                FROM projections pr
-                JOIN halls h ON h.id = pr.hall_id
-                JOIN venues v ON v.id = h.venue_id
-                WHERE v.id = :venueId
-                GROUP BY pr.movie_id
-              ) prj ON prj.movie_id = m.id
-          WHERE v.id = :venueId
+          WHERE EXISTS (
+              SELECT 1
+              FROM projections p
+              JOIN halls h ON h.id = p.hall_id
+              WHERE p.movie_id = m.id AND h.venue_id = :venueId
+          )
           AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
           AND m.status = 'PUBLISHED'
           """,
       // auto generated count query contains syntax error
       countQuery =
           """
-          SELECT COUNT(DISTINCT m.id)
-          FROM movies m
-          JOIN projections p ON p.movie_id = m.id
-          JOIN halls h ON h.id = p.hall_id
-          JOIN venues v ON v.id = h.venue_id
-          WHERE v.id = :venueId
-          AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
-          AND m.status = 'PUBLISHED'
-          """,
+                  SELECT count(m.id)
+                  FROM movies m
+                  WHERE EXISTS (
+                      SELECT 1
+                      FROM projections p
+                      JOIN halls h ON h.id = p.hall_id
+                      WHERE p.movie_id = m.id AND h.venue_id = :venueId
+                  )
+                  AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
+                  AND m.status = 'PUBLISHED'
+                  """,
       nativeQuery = true)
-  Page<MovieShowingProjection> getMoviesShowingPreviewsByVenueId(
+  Page<MoviePreviewProjection> getMoviesShowingPreviewsByVenueId(
       Pageable pageable, @Param("venueId") long venueId);
 
   @Query(

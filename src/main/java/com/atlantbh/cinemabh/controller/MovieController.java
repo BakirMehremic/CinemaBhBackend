@@ -8,7 +8,7 @@ import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.dto.response.PaginatedResponse;
 import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
-import com.atlantbh.cinemabh.projection.MovieShowingProjection;
+import com.atlantbh.cinemabh.projection.MoviePreviewProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.service.MovieService;
 import jakarta.validation.Valid;
@@ -42,7 +42,7 @@ public class MovieController {
   }
 
   @GetMapping("/showing/venue")
-  public ResponseEntity<PaginatedResponse<MovieShowingProjection>> getMoviesByVenueIdPaginated(
+  public ResponseEntity<PaginatedResponse<MoviePreviewProjection>> getMoviesByVenueIdPaginated(
       @Valid FilterMovieByVenueIdRequest request) {
 
     return ResponseEntity.ok(
