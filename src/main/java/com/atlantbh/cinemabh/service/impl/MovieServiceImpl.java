@@ -7,6 +7,7 @@ import com.atlantbh.cinemabh.dto.request.movie.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
+import com.atlantbh.cinemabh.exception.NotFoundException;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
 import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
@@ -14,7 +15,6 @@ import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
 import com.atlantbh.cinemabh.service.MovieService;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -70,14 +70,11 @@ public class MovieServiceImpl implements MovieService {
   }
 
   @Override
-  public Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
+  public Page<MovieShowingProjection> getMoviePreviewsPaginatedByVenueId(
       FilterMovieByVenueIdRequest filter) {
     Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 
-    Page<Movie> movies =
-        movieRepository.getMoviesShowingPreviewsByVenueId(pageable, filter.getVenueId());
-
-    return movies.map(movieMapper::toPreviewResponse);
+    return movieRepository.getMoviesShowingPreviewsByVenueId(pageable, filter.getVenueId());
   }
 
   @Override
@@ -96,7 +93,9 @@ public class MovieServiceImpl implements MovieService {
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<MovieDetailsProjection> getMovieDetailsById(long movieId) {
-    return movieRepository.getMovieDetailsById(movieId);
+  public MovieDetailsProjection getMovieDetailsById(long movieId) {
+    return movieRepository
+        .getMovieDetailsById(movieId)
+        .orElseThrow(() -> new NotFoundException("Movie with id " + movieId + " not found"));
   }
 }

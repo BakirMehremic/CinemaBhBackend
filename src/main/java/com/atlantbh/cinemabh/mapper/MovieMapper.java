@@ -12,9 +12,5 @@ public interface MovieMapper {
 
   List<MoviePreviewResponse> toPreviewResponseList(List<Long> ids, List<Movie> movies);
 
-  MovieShowingResponse toShowingResponse(Movie movie);
-
-  List<MovieShowingResponse> toShowingResponseList(List<Long> ids, List<Movie> movies);
-
   Page<MovieShowingResponse> toShowingResponseList(Page<MovieShowingProjection> projections);
 }

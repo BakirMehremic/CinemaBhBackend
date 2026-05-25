@@ -83,17 +83,50 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
       @Param("genreId") Long genreId);
 
   @Query(
-"""
-SELECT DISTINCT m
-FROM Movie m
-JOIN m.projections p
-JOIN p.hall h
-JOIN h.venue v
-WHERE v.id = :venueId
-AND CURRENT_DATE BETWEEN m.startShowingDate AND m.endShowingDate
-AND m.moviePublishedStatus=PUBLISHED
-""")
-  Page<Movie> getMoviesShowingPreviewsByVenueId(Pageable pageable, @Param("venueId") long venueId);
+      value =
+          """
+          SELECT m.id, m.name, m.pg_rating, m.language, m.duration_minutes,
+                           m.end_showing_date, ph.image_path as imageUrl, prj.startTimes, gen.genres
+          FROM movies m
+          JOIN projections p ON p.movie_id = m.id
+          JOIN halls h ON h.id = p.hall_id
+          JOIN venues v ON v.id = h.venue_id
+          LEFT JOIN photos ph
+            ON ph.movie_id=m.id AND ph.is_cover_photo=true
+          LEFT JOIN (
+            SELECT mg.movie_id,
+                   array_agg(g.name ORDER BY g.name) as genres
+            FROM movies_genres mg
+            JOIN genres g ON g.id=mg.genre_id
+            GROUP BY mg.movie_id
+          ) gen ON gen.movie_id = m.id
+          JOIN (
+                SELECT pr.movie_id, json_agg(pr.start_time ORDER BY pr.start_time) AS startTimes
+                FROM projections pr
+                JOIN halls h ON h.id = pr.hall_id
+                JOIN venues v ON v.id = h.venue_id
+                WHERE v.id = :venueId
+                GROUP BY pr.movie_id
+              ) prj ON prj.movie_id = m.id
+          WHERE v.id = :venueId
+          AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
+          AND m.status = 'PUBLISHED'
+          """,
+      // auto generated count query contains syntax error
+      countQuery =
+          """
+          SELECT COUNT(DISTINCT m.id)
+          FROM movies m
+          JOIN projections p ON p.movie_id = m.id
+          JOIN halls h ON h.id = p.hall_id
+          JOIN venues v ON v.id = h.venue_id
+          WHERE v.id = :venueId
+          AND (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Sarajevo')::date BETWEEN m.start_showing_date AND m.end_showing_date
+          AND m.status = 'PUBLISHED'
+          """,
+      nativeQuery = true)
+  Page<MovieShowingProjection> getMoviesShowingPreviewsByVenueId(
+      Pageable pageable, @Param("venueId") long venueId);
 
   @Query(
       value =

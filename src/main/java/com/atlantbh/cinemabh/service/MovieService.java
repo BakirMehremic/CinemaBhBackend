@@ -7,8 +7,8 @@ import com.atlantbh.cinemabh.dto.request.movie.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
+import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 
 public interface MovieService {
@@ -16,9 +16,10 @@ public interface MovieService {
 
   Page<MovieShowingResponse> filterShowingMoviesPaginated(FilterShowingMoviesRequest filter);
 
-  Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(FilterMovieByVenueIdRequest filter);
+  Page<MovieShowingProjection> getMoviePreviewsPaginatedByVenueId(
+      FilterMovieByVenueIdRequest filter);
 
   Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(FilterUpcomingMoviesRequest filter);
 
-  Optional<MovieDetailsProjection> getMovieDetailsById(long movieId);
+  MovieDetailsProjection getMovieDetailsById(long movieId);
 }
