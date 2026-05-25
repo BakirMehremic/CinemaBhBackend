@@ -8,11 +8,13 @@ import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
+import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
 import com.atlantbh.cinemabh.service.MovieService;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -90,5 +92,11 @@ public class MovieServiceImpl implements MovieService {
         filter.getCityId(),
         filter.getVenueId(),
         filter.getGenreId());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Optional<MovieDetailsProjection> getMovieDetailsById(long movieId) {
+    return movieRepository.getMovieDetailsById(movieId);
   }
 }

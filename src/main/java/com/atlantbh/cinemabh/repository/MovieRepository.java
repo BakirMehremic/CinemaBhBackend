@@ -1,11 +1,13 @@
 package com.atlantbh.cinemabh.repository;
 
 import com.atlantbh.cinemabh.entity.Movie;
+import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -135,4 +137,50 @@ AND m.moviePublishedStatus=PUBLISHED
       @Param("cityId") Long cityId,
       @Param("venueId") Long venueId,
       @Param("genreId") Long genreId);
+
+  @Query(
+      value =
+          """
+                      SELECT m.name AS name,
+                             m.trailer_link AS trailerLink,
+                             m.pg_rating AS pgRating,
+                             m.language AS language,
+                             m.duration_minutes AS durationMinutes,
+                             m.start_showing_date AS startShowingDate,
+                             m.end_showing_date AS endShowingDate,
+                             m.synopsis AS synopsis,
+                             m.rotten_tomatoes_rating AS rottenTomatoesRating,
+                             m.imdb_rating AS imdbRating,
+                             img.images AS images,
+                             gen.genres AS genres,
+                                pers.directors AS directors,
+                                    pers.writers AS writers,
+                                    pers.cast_members AS cast
+                      FROM movies m
+                      LEFT JOIN (
+                          SELECT p.movie_id,
+                                 array_agg(p.image_path) AS images
+                          FROM photos p
+                          GROUP BY p.movie_id
+                      ) img ON img.movie_id = m.id
+                      LEFT JOIN (
+                          SELECT mg.movie_id,
+                                 array_agg(g.name ORDER BY g.name) AS genres
+                            FROM movies_genres mg
+                            JOIN genres g ON g.id = mg.genre_id
+                            GROUP BY mg.movie_id
+                        ) gen ON gen.movie_id = m.id
+                     LEFT JOIN (
+                         SELECT mp.movie_id,
+                                array_agg(p.name  ORDER BY p.name) FILTER (WHERE p.type = 'DIRECTOR') AS directors,
+                                array_agg(p.name ORDER BY p.name) FILTER (WHERE p.type = 'WRITER') AS writers,
+                                array_agg(p.name ORDER BY p.name) FILTER (WHERE p.type = 'CAST') AS cast_members
+                         FROM movies_personnel mp
+                         JOIN personnel p ON p.id = mp.personnel_id
+                         GROUP BY mp.movie_id
+                     ) pers ON pers.movie_id = m.id
+                      WHERE m.id = :movieId
+                  """,
+      nativeQuery = true)
+  Optional<MovieDetailsProjection> getMovieDetailsById(@Param("movieId") Long movieId);
 }

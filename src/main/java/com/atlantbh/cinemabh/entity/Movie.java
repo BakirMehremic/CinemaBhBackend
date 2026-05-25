@@ -89,4 +89,11 @@ public class Movie {
 
   @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
   private Set<Projection> projections = new HashSet<>();
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "movies_personnel",
+      joinColumns = @JoinColumn(name = "movie_id"),
+      inverseJoinColumns = @JoinColumn(name = "personnel_id"))
+  private Set<Personnel> personnel = new HashSet<>();
 }
