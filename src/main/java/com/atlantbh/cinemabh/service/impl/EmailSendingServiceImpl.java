@@ -23,9 +23,7 @@ public class EmailSendingServiceImpl implements EmailSendingService {
 
   @Override
   public void sendVerificationEmail(String recipient, String subject, String code) {
-    log.warn("code is {}", code);
-    return; // uncomment later
-    /*String htmlBody =
+    String htmlBody =
         "<h1>Verification Code</h1>" + "<h2>Your code is: <strong>" + code + "</strong></h2>";
 
     CreateEmailOptions params =
@@ -50,6 +48,6 @@ public class EmailSendingServiceImpl implements EmailSendingService {
           .detail("Could not send email")
           .build();
       throw new ServiceUnavailableException("Email could not be sent.");
-    }*/
+    }
   }
 }
