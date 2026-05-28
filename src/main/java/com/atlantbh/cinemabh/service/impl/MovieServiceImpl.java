@@ -94,7 +94,7 @@ public class MovieServiceImpl implements MovieService {
 
   @Override
   @Transactional(readOnly = true)
-  public MovieDetailsProjection getMovieDetailsById(long movieId) {
+  public MovieDetailsProjection getMovieDetailsById(Long movieId) {
     return movieRepository
         .getMovieDetailsById(movieId)
         .orElseThrow(() -> new NotFoundException("Movie with id " + movieId + " not found"));

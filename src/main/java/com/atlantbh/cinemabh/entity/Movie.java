@@ -2,26 +2,16 @@ package com.atlantbh.cinemabh.entity;
 
 import com.atlantbh.cinemabh.enums.DraftStepStatus;
 import com.atlantbh.cinemabh.enums.MoviePublishedStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -92,5 +82,6 @@ public class Movie {
       name = "movies_personnel",
       joinColumns = @JoinColumn(name = "movie_id"),
       inverseJoinColumns = @JoinColumn(name = "personnel_id"))
-  private Set<Personnel> personnel = new HashSet<>();
+  @OrderColumn(name = "position", nullable = false)
+  private List<Personnel> personnel = new ArrayList<>();
 }

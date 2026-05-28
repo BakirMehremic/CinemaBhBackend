@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface MovieDetailsProjection {
+  Long getId();
+
   String getName();
 
   String getTrailerLink();
@@ -29,7 +31,7 @@ public interface MovieDetailsProjection {
 
   List<String> getWriters();
 
-  List<String> getCast();
+  List<String> getActors();
 
   Short getRottenTomatoesRating();
 

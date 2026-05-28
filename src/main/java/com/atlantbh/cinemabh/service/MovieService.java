@@ -21,5 +21,5 @@ public interface MovieService {
 
   Page<MovieUpcomingProjection> filterUpcomingMoviesPaginated(FilterUpcomingMoviesRequest filter);
 
-  MovieDetailsProjection getMovieDetailsById(long movieId);
+  MovieDetailsProjection getMovieDetailsById(Long movieId);
 }

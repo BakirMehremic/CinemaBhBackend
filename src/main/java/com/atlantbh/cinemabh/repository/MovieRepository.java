@@ -171,7 +171,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
   @Query(
       value =
           """
-                      SELECT m.name AS name,
+                      SELECT
+                             m.id as id,
+                             m.name AS name,
                              m.trailer_link AS trailerLink,
                              m.pg_rating AS pgRating,
                              m.language AS language,
@@ -185,11 +187,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
                              gen.genres AS genres,
                                 pers.directors AS directors,
                                     pers.writers AS writers,
-                                    pers.cast_members AS cast
+                                    pers.actors AS actors
                       FROM movies m
                       LEFT JOIN (
                           SELECT p.movie_id,
-                                 array_agg(p.image_path) AS images
+                                 array_agg(p.image_path ORDER BY p.is_cover_photo DESC, p.id) AS images
                           FROM photos p
                           GROUP BY p.movie_id
                       ) img ON img.movie_id = m.id
@@ -202,9 +204,12 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
                         ) gen ON gen.movie_id = m.id
                      LEFT JOIN (
                          SELECT mp.movie_id,
-                                array_agg(p.name  ORDER BY p.name) FILTER (WHERE p.type = 'DIRECTOR') AS directors,
-                                array_agg(p.name ORDER BY p.name) FILTER (WHERE p.type = 'WRITER') AS writers,
-                                array_agg(p.name ORDER BY p.name) FILTER (WHERE p.type = 'CAST') AS cast_members
+                                array_agg(p.name ORDER BY mp.position) FILTER (WHERE p.type =
+                                            CAST(:#{T(com.atlantbh.cinemabh.enums.PersonnelType).DIRECTOR.name()} AS personnel_type)) AS directors,
+                                array_agg(p.name ORDER BY mp.position) FILTER (WHERE p.type =
+                                            CAST(:#{T(com.atlantbh.cinemabh.enums.PersonnelType).WRITER.name()} AS personnel_type)) AS writers,
+                                array_agg(p.name ORDER BY mp.position) FILTER (WHERE p.type =
+                                            CAST(:#{T(com.atlantbh.cinemabh.enums.PersonnelType).ACTOR.name()} AS personnel_type)) AS actors
                          FROM movies_personnel mp
                          JOIN personnel p ON p.id = mp.personnel_id
                          GROUP BY mp.movie_id

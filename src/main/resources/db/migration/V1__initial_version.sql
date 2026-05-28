@@ -7,7 +7,7 @@ CREATE TYPE "movie_status" AS ENUM (
 CREATE TYPE "personnel_type" AS ENUM (
     'DIRECTOR',
     'WRITER',
-    'CAST'
+    'ACTOR'
     );
 
 CREATE TYPE "seat_type" AS ENUM (
@@ -130,7 +130,9 @@ CREATE TABLE "movies_personnel"
 (
     "movie_id"     BIGINT NOT NULL,
     "personnel_id" BIGINT NOT NULL,
-    PRIMARY KEY ("movie_id", "personnel_id")
+    "position"     SMALLINT CHECK ( "position" > 0 ),
+    PRIMARY KEY ("movie_id", "personnel_id"),
+    UNIQUE ("movie_id", "position", "personnel_id")
 );
 
 CREATE TABLE "seats"
