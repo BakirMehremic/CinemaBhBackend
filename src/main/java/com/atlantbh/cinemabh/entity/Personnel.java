@@ -17,7 +17,7 @@ public class Personnel {
   @Setter(AccessLevel.NONE)
   private Long id;
 
-  @Column(nullable = false, length = PersonnelConstants.NAME_MAX_LENGTH)
+  @Column(nullable = false, length = PersonnelConstants.PERSONNEL_NAME_MAX_LENGTH)
   @Setter(AccessLevel.NONE)
   private String name;
 

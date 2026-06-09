@@ -1,6 +1,8 @@
 package com.atlantbh.cinemabh.entity;
 
 import static com.atlantbh.cinemabh.constant.AuthConstants.PASSWORD_HASH_LENGTH;
+import static com.atlantbh.cinemabh.constant.LocationConstants.STREET_MAX_LENGTH;
+import static com.atlantbh.cinemabh.constant.UserConstants.*;
 
 import com.atlantbh.cinemabh.enums.UserRole;
 import jakarta.persistence.*;
@@ -29,17 +31,19 @@ public class User {
   @Column(nullable = false, length = PASSWORD_HASH_LENGTH)
   private String passwordHash;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = FIRST_NAME_MAX_LENGTH)
   private String firstName;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = LAST_NAME_MAX_LENGTH)
   private String lastName;
 
-  @Column private String street;
+  @Column(length = STREET_MAX_LENGTH)
+  private String street;
 
-  @Column private String phoneNumber;
+  @Column(length = PHONE_NUMBER_MAX_LENGTH)
+  private String phoneNumber;
 
-  @Column(unique = true, nullable = false)
+  @Column(unique = true, nullable = false, length = EMAIL_MAX_LENGTH)
   private String email;
 
   @Column private String imagePath;

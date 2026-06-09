@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.entity;
 
+import static com.atlantbh.cinemabh.constant.MovieConstants.*;
+
 import com.atlantbh.cinemabh.enums.DraftStepStatus;
 import com.atlantbh.cinemabh.enums.MoviePublishedStatus;
 import jakarta.persistence.*;
@@ -27,10 +29,10 @@ public class Movie {
   @Setter(AccessLevel.NONE)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = PG_RATING_MAX_LENGTH)
   private String pgRating;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = LANGUAGE_MAX_LENGTH)
   private String language;
 
   @Column(nullable = false)
@@ -39,7 +41,8 @@ public class Movie {
   @Column(name = "duration_minutes", nullable = false)
   private int durationInMinutes;
 
-  @Column private String trailerLink;
+  @Column(length = TRAILER_LINK_MAX_LENGTH)
+  private String trailerLink;
 
   @Column private String synopsis;
 
