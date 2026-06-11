@@ -30,18 +30,18 @@ public class CookieServiceImpl implements CookieService {
     ResponseCookie accessCookie =
         ResponseCookie.from(ACCESS_TOKEN_NAME, auth.accessToken())
             .httpOnly(true)
-            .secure(cookieProperties.isSecure())
+            .secure(cookieProperties.getSecure())
             .path("/")
-            .maxAge(jwtProperties.getAccessTokenExpirationMin() * 60)
+            .maxAge(jwtProperties.getAccessTokenExpiration().toSeconds())
             .sameSite("Strict")
             .build();
 
     ResponseCookie refreshCookie =
         ResponseCookie.from(REFRESH_TOKEN_NAME, auth.refreshToken())
             .httpOnly(true)
-            .secure(cookieProperties.isSecure())
+            .secure(cookieProperties.getSecure())
             .path("/")
-            .maxAge(jwtProperties.getRefreshTokenExpirationMin() * 60)
+            .maxAge(jwtProperties.getRefreshTokenExpiration().toSeconds())
             .sameSite("Strict")
             .build();
 
@@ -74,14 +74,14 @@ public class CookieServiceImpl implements CookieService {
   public void clearTokenCookies(HttpServletResponse response) {
     Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_NAME, "");
     accessTokenCookie.setHttpOnly(true);
-    accessTokenCookie.setSecure(cookieProperties.isSecure());
+    accessTokenCookie.setSecure(cookieProperties.getSecure());
     accessTokenCookie.setPath("/");
     accessTokenCookie.setMaxAge(0);
     response.addCookie(accessTokenCookie);
 
     Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_NAME, "");
     refreshTokenCookie.setHttpOnly(true);
-    refreshTokenCookie.setSecure(cookieProperties.isSecure());
+    refreshTokenCookie.setSecure(cookieProperties.getSecure());
     refreshTokenCookie.setPath("/");
     refreshTokenCookie.setMaxAge(0);
     response.addCookie(refreshTokenCookie);

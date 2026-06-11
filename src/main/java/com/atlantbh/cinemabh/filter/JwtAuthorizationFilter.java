@@ -50,6 +50,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
       UsernamePasswordAuthenticationToken auth =
           new UsernamePasswordAuthenticationToken(claims.userId(), null, authorities);
       SecurityContextHolder.getContext().setAuthentication(auth);
+    } else {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setContentType("application/json");
+      response.getWriter().write("Invalid or expired access token");
+      return;
     }
 
     filterChain.doFilter(request, response);

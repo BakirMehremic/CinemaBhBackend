@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
   private final UserService userService;
   private final CookieService cookieService;
+  private final AuthUtils authUtils;
 
   @PostMapping("/register")
   public ResponseEntity<ResendAtResponse<MessageDataResponse<UserDetailsResponse>>> register(
@@ -34,7 +35,7 @@ public class UserController {
             new ResendAtResponse<>(
                 new MessageDataResponse<>(
                     "Registration successful, please verify your account via email.", createdUser),
-                AuthUtils.getResendAt()));
+                authUtils.getResendAt()));
   }
 
   @PostMapping("/login")
@@ -97,7 +98,7 @@ public class UserController {
     return ResponseEntity.ok(
         new ResendAtResponse<>(
             new MessageResponse("A new verification code was sent to your email."),
-            AuthUtils.getResendAt()));
+            authUtils.getResendAt()));
   }
 
   @PostMapping("/logout")

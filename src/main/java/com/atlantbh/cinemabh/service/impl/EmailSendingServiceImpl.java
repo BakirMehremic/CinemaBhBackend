@@ -43,6 +43,7 @@ public class EmailSendingServiceImpl implements EmailSendingService {
               .email(recipient)
               .build());
     } catch (ResendException e) {
+      log.error("could not send email {}", e.getMessage(), e);
       AuthEvent.builder(AuthEventType.VERIFY_ACCOUNT, AuthEventOutcome.FAILURE)
           .email(recipient)
           .detail("Could not send email")

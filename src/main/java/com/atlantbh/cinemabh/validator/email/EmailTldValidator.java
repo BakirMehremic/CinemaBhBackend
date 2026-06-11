@@ -1,7 +1,7 @@
 package com.atlantbh.cinemabh.validator.email;
 
-import static com.atlantbh.cinemabh.constant.AuthConstants.IANA_URL;
 
+import com.atlantbh.cinemabh.config.properties.ValidationUrlProperties;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 class EmailTldValidator {
   private final RestTemplate restTemplate;
+  private final ValidationUrlProperties validationUrlProperties;
+
   private Set<String> tldCache;
 
   boolean isValidTld(String tld) {
@@ -29,7 +31,7 @@ class EmailTldValidator {
     if (tldCache != null) return;
 
     try {
-      String response = restTemplate.getForObject(IANA_URL, String.class);
+      String response = restTemplate.getForObject(validationUrlProperties.getIana(), String.class);
 
       tldCache =
           Arrays.stream(response.split("\n"))

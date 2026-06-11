@@ -2,9 +2,11 @@ package com.atlantbh.cinemabh.config;
 
 import com.atlantbh.cinemabh.config.properties.CookieProperties;
 import com.atlantbh.cinemabh.filter.JwtAuthorizationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,7 +40,7 @@ public class SecurityConfig {
         cookie -> {
           cookie.path("/");
           cookie.sameSite("Lax");
-          cookie.secure(cookieProperties.isSecure());
+          cookie.secure(cookieProperties.getSecure());
         });
 
     http.csrf(
@@ -46,6 +48,33 @@ public class SecurityConfig {
                 csrf.csrfTokenRepository(csrfRepository).csrfTokenRequestHandler(requestHandler))
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
+        /*        .authorizeHttpRequests(
+        auth ->
+            auth.requestMatchers("/auth/**", "/actuator/health")
+                .permitAll()
+                .anyRequest()
+                .authenticated())*/
+        .exceptionHandling(
+            exceptions ->
+                exceptions
+                    .authenticationEntryPoint(
+                        (request, response, authException) -> {
+                          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                          response
+                              .getWriter()
+                              .write(
+                                  "{\"message\": \"Authentication is required to access this resource.\"}");
+                        })
+                    .accessDeniedHandler(
+                        (request, response, accessDeniedException) -> {
+                          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                          response
+                              .getWriter()
+                              .write(
+                                  "{\"message\": \"You do not have permission to access this resource.\"}");
+                        }))
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
     http.sessionManagement(

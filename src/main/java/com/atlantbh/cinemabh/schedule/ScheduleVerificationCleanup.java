@@ -17,10 +17,9 @@ public class ScheduleVerificationCleanup {
   private final VerificationProperties verificationProperties;
 
   @Transactional
-  @Scheduled(fixedRateString = "${verification.schedule-delete-ms}")
+  @Scheduled(fixedRateString = "${verification.schedule-delete}")
   public void cleanupExpiredCodes() {
-    LocalDateTime threshold =
-        LocalDateTime.now().minusMinutes(verificationProperties.getExpirationMinutes());
+    LocalDateTime threshold = LocalDateTime.now().minus(verificationProperties.getExpiration());
 
     int deleted = repository.deleteByCreatedAtBefore(threshold);
 

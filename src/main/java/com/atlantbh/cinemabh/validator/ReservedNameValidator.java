@@ -19,7 +19,7 @@ public class ReservedNameValidator {
   public void validate(String... inputs) {
     Arrays.stream(inputs)
         .map(input -> input.trim().toLowerCase())
-        .filter(reservedNamesConfig.getReservedNames()::contains)
+        .filter(reservedNamesConfig.getNames()::contains)
         .findFirst()
         .ifPresent(
             invalid -> {

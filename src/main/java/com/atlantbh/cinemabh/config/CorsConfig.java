@@ -1,15 +1,16 @@
 package com.atlantbh.cinemabh.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.atlantbh.cinemabh.config.properties.FrontendProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 public class CorsConfig {
-  @Value("${FRONTEND_URL:${frontend.url}}")
-  private String frontendUrl;
+  private final FrontendProperties frontendProperties;
 
   @Bean
   public WebMvcConfigurer corsConfigurer() {
@@ -18,7 +19,7 @@ public class CorsConfig {
       public void addCorsMappings(CorsRegistry registry) {
         registry
             .addMapping("/**")
-            .allowedOrigins(frontendUrl)
+            .allowedOrigins(frontendProperties.getUrl())
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD")
             .allowedHeaders("*")
             .allowCredentials(true);

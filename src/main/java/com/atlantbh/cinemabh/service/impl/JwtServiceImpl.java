@@ -25,13 +25,17 @@ public class JwtServiceImpl implements JwtService {
   @Override
   public String generateJwt(User user) {
     return buildToken(
-        user, AuthEventType.ISSUE_ACCESS_TOKEN, jwtProperties.getAccessTokenExpirationMin());
+        user,
+        AuthEventType.ISSUE_ACCESS_TOKEN,
+        jwtProperties.getAccessTokenExpiration().toMinutes());
   }
 
   @Override
   public String generateRefreshToken(User user) {
     return buildToken(
-        user, AuthEventType.ISSUE_REFRESH_TOKEN, jwtProperties.getRefreshTokenExpirationMin());
+        user,
+        AuthEventType.ISSUE_REFRESH_TOKEN,
+        jwtProperties.getRefreshTokenExpiration().toMinutes());
   }
 
   private String buildToken(User user, AuthEventType eventType, long expirationMinutes) {

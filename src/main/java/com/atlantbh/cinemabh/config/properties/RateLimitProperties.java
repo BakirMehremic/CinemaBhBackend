@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.config.properties;
 
+import jakarta.validation.constraints.Positive;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,11 +11,11 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @Validated
-@ConfigurationProperties(prefix = "verification")
-public class VerificationProperties {
-  @DurationMin(seconds = 30)
-  private Duration expiration;
+@ConfigurationProperties(prefix = "app.rate-limit")
+public class RateLimitProperties {
+  @Positive(message = "requests per minute must be positive")
+  private int requestsPerMinute;
 
-  @DurationMin(minutes = 1)
-  private Duration scheduleDelete;
+  @DurationMin(seconds = 30)
+  private Duration verificationResendCooldown;
 }

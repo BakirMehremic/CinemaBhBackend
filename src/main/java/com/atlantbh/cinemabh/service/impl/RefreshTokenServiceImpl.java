@@ -34,8 +34,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     tokenEntity.setUser(user);
     tokenEntity.setTokenHash(toSha256(token));
     tokenEntity.setCreatedAt(LocalDateTime.now());
-    tokenEntity.setExpiresAt(
-        LocalDateTime.now().plusMinutes(jwtProperties.getRefreshTokenExpirationMin()));
+    tokenEntity.setExpiresAt(LocalDateTime.now().plus(jwtProperties.getRefreshTokenExpiration()));
 
     refreshTokenRepository.save(tokenEntity);
   }

@@ -1,8 +1,8 @@
 package com.atlantbh.cinemabh.validator.password;
 
-import static com.atlantbh.cinemabh.constant.AuthConstants.PWNED_API;
 import static com.atlantbh.cinemabh.util.HashingUtils.toSha1;
 
+import com.atlantbh.cinemabh.config.properties.ValidationUrlProperties;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
 import com.atlantbh.cinemabh.exception.InvalidRequestException;
@@ -18,16 +18,18 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class PwnedPasswordValidator {
   private final RestTemplate restTemplate;
+  private final ValidationUrlProperties validationUrlProperties;
 
   public void validatePasswordPwned(String password) {
     String hash = toSha1(password);
     String prefix = hash.substring(0, 5);
     String suffix = hash.substring(5).toUpperCase();
 
-    String response = restTemplate.getForObject(PWNED_API + prefix, String.class);
+    String response =
+        restTemplate.getForObject(validationUrlProperties.getPwnedApi() + prefix, String.class);
 
     if (response == null) {
-      log.warn("Did not get response from {}", PWNED_API);
+      log.warn("Did not get response from {}", validationUrlProperties.getPwnedApi());
       throw new ServiceUnavailableException("Could not validate password");
     }
 
