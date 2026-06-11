@@ -2,8 +2,8 @@ package com.atlantbh.cinemabh.controller;
 
 import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.*;
+import com.atlantbh.cinemabh.service.AuthService;
 import com.atlantbh.cinemabh.service.CookieService;
-import com.atlantbh.cinemabh.service.UserService;
 import com.atlantbh.cinemabh.util.AuthUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
-public class UserController {
-  private final UserService userService;
+@RequestMapping("/auth")
+public class AuthController {
+  private final AuthService authService;
   private final CookieService cookieService;
   private final AuthUtils authUtils;
 
   @PostMapping("/register")
   public ResponseEntity<ResendAtResponse<MessageDataResponse<UserDetailsResponse>>> register(
       @Valid @RequestBody RegisterUserRequest request) {
-    UserDetailsResponse createdUser = userService.registerUser(request);
+    UserDetailsResponse createdUser = authService.registerUser(request);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(
@@ -42,7 +42,7 @@ public class UserController {
   public ResponseEntity<UserDetailsResponse> login(
       @Valid @RequestBody LoginRequest request, HttpServletResponse response) {
 
-    AuthResponse authResponse = userService.login(request);
+    AuthResponse authResponse = authService.login(request);
     cookieService.setTokenCookies(response, authResponse);
 
     return ResponseEntity.ok(authResponse.user());
@@ -57,7 +57,7 @@ public class UserController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    AuthResponse authResponse = userService.refresh(refreshToken.get());
+    AuthResponse authResponse = authService.refresh(refreshToken.get());
 
     cookieService.setTokenCookies(response, authResponse);
     return ResponseEntity.ok(authResponse.user());
@@ -67,7 +67,7 @@ public class UserController {
   public ResponseEntity<UserDetailsResponse> verifyAccount(
       HttpServletResponse response, @Valid @RequestBody VerificationRequest request) {
 
-    AuthResponse authResponse = userService.verifyAccount(request);
+    AuthResponse authResponse = authService.verifyAccount(request);
     cookieService.setTokenCookies(response, authResponse);
     return ResponseEntity.ok(authResponse.user());
   }
@@ -76,7 +76,7 @@ public class UserController {
   public ResponseEntity<MessageResponse> requestPasswordReset(
       @Valid @RequestBody PasswordResetRequest request) {
 
-    userService.requestPasswordReset(request);
+    authService.requestPasswordReset(request);
     return ResponseEntity.status(HttpStatus.ACCEPTED)
         .body(new MessageResponse("Reset code sent to your email."));
   }
@@ -84,7 +84,7 @@ public class UserController {
   @PostMapping("/password/reset/verify")
   public ResponseEntity<MessageResponse> confirmPasswordReset(
       @Valid @RequestBody PasswordResetConfirmRequest request) {
-    userService.confirmPasswordReset(request);
+    authService.confirmPasswordReset(request);
 
     return ResponseEntity.ok(
         new MessageResponse("Password has been reset successfully, you can now log in."));
@@ -93,7 +93,7 @@ public class UserController {
   @PostMapping("/verify/resend")
   public ResponseEntity<ResendAtResponse<MessageResponse>> resendAccountVerificationCode(
       @Valid @RequestBody ResendAccountVerificationRequest request) {
-    userService.resendAccountVerificationCode(request);
+    authService.resendAccountVerificationCode(request);
 
     return ResponseEntity.ok(
         new ResendAtResponse<>(

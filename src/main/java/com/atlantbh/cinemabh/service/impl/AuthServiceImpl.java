@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
   private final CityRepository cityRepository;
   private final VerificationCodeRepository verificationCodeRepository;
