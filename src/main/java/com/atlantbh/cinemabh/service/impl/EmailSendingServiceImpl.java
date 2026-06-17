@@ -1,15 +1,8 @@
 package com.atlantbh.cinemabh.service.impl;
 
 import com.atlantbh.cinemabh.config.properties.ResendProperties;
-import com.atlantbh.cinemabh.enums.AuthEventOutcome;
-import com.atlantbh.cinemabh.enums.AuthEventType;
-import com.atlantbh.cinemabh.exception.ServiceUnavailableException;
-import com.atlantbh.cinemabh.logging.AuthEvent;
 import com.atlantbh.cinemabh.service.EmailSendingService;
 import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +16,9 @@ public class EmailSendingServiceImpl implements EmailSendingService {
 
   @Override
   public void sendVerificationEmail(String recipient, String subject, String code) {
-    String htmlBody =
+    log.warn("code is {}", code);
+    return;
+    /*    String htmlBody =
         "<h1>Verification Code</h1>" + "<h2>Your code is: <strong>" + code + "</strong></h2>";
 
     CreateEmailOptions params =
@@ -49,6 +44,6 @@ public class EmailSendingServiceImpl implements EmailSendingService {
           .detail("Could not send email")
           .build();
       throw new ServiceUnavailableException("Email could not be sent.");
-    }
+    }*/
   }
 }

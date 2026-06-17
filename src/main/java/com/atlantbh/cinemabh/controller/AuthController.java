@@ -2,6 +2,7 @@ package com.atlantbh.cinemabh.controller;
 
 import com.atlantbh.cinemabh.dto.request.user.*;
 import com.atlantbh.cinemabh.dto.response.*;
+import com.atlantbh.cinemabh.exception.UnauthorizedException;
 import com.atlantbh.cinemabh.service.AuthService;
 import com.atlantbh.cinemabh.service.CookieService;
 import com.atlantbh.cinemabh.util.AuthUtils;
@@ -54,7 +55,7 @@ public class AuthController {
     Optional<String> refreshToken = cookieService.extractRefreshToken(request);
 
     if (refreshToken.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      throw new UnauthorizedException("No refresh token present");
     }
 
     AuthResponse authResponse = authService.refresh(refreshToken.get());

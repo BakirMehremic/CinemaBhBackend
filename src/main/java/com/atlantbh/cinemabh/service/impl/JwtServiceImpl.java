@@ -5,6 +5,7 @@ import com.atlantbh.cinemabh.dto.internal.TokenClaims;
 import com.atlantbh.cinemabh.entity.User;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
 import com.atlantbh.cinemabh.enums.AuthEventType;
+import com.atlantbh.cinemabh.enums.UserRole;
 import com.atlantbh.cinemabh.logging.AuthEvent;
 import com.atlantbh.cinemabh.service.JwtService;
 import io.jsonwebtoken.Claims;
@@ -99,7 +100,7 @@ public class JwtServiceImpl implements JwtService {
 
     return new TokenClaims(
         Long.parseLong(claims.getSubject()),
-        claims.get("role", String.class),
-        claims.getExpiration());
+        UserRole.valueOf(claims.get("role", String.class)),
+        claims.getExpiration().toInstant());
   }
 }

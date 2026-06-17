@@ -1,5 +1,6 @@
 package com.atlantbh.cinemabh.dto.internal;
 
-import java.util.Date;
+import com.atlantbh.cinemabh.enums.UserRole;
+import java.time.Instant;
 
-public record TokenClaims(long userId, String role, Date expiration) {}
+public record TokenClaims(long userId, UserRole role, Instant expiration) {}

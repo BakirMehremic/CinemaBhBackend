@@ -48,12 +48,6 @@ public class SecurityConfig {
                 csrf.csrfTokenRepository(csrfRepository).csrfTokenRequestHandler(requestHandler))
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
-        /*        .authorizeHttpRequests(
-        auth ->
-            auth.requestMatchers("/auth/**", "/actuator/health")
-                .permitAll()
-                .anyRequest()
-                .authenticated())*/
         .exceptionHandling(
             exceptions ->
                 exceptions
