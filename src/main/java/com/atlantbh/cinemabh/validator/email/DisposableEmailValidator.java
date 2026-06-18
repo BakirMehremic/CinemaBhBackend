@@ -1,7 +1,7 @@
 package com.atlantbh.cinemabh.validator.email;
 
-import static com.atlantbh.cinemabh.constant.AuthConstants.DISPOSABLE_EMAIL_DOMAINS_URL;
 
+import com.atlantbh.cinemabh.config.properties.ValidationUrlProperties;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -18,9 +18,11 @@ class DisposableEmailValidator {
       Pattern.compile("^(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$");
   private final Set<String> disposableDomains = new HashSet<>();
   private final RestTemplate restTemplate;
+  private final ValidationUrlProperties validationUrlProperties;
 
-  public DisposableEmailValidator(RestTemplate restTemplate) {
+  public DisposableEmailValidator(RestTemplate restTemplate, ValidationUrlProperties validationUrlProperties) {
     this.restTemplate = restTemplate;
+    this.validationUrlProperties= validationUrlProperties;
     loadDomains();
   }
 
@@ -30,7 +32,7 @@ class DisposableEmailValidator {
 
   private void loadDomains() {
     try {
-      String response = restTemplate.getForObject(DISPOSABLE_EMAIL_DOMAINS_URL, String.class);
+      String response = restTemplate.getForObject(validationUrlProperties.getDisposableEmail(), String.class);
 
       Arrays.stream(response.split("\n"))
           .map(String::trim)

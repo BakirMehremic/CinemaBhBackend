@@ -1,19 +1,18 @@
 package com.atlantbh.cinemabh.config;
 
+import jakarta.annotation.PostConstruct;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Getter
-@Setter
 @Component
-@ConfigurationProperties(prefix = "app.security")
+@ConfigurationProperties(prefix = "app.security.reserved")
 public class ReservedNamesConfig {
 
-  // appends names from app.security.reserved-names to this set
-  private Set<String> reservedNames =
+  private static final Set<String> DEFAULTS =
       Set.of(
           "admin",
           "administrator",
@@ -71,4 +70,11 @@ public class ReservedNamesConfig {
           "adminx",
           "root-user",
           "support-team");
+
+  private Set<String> names = new HashSet<>();
+
+  @PostConstruct
+  void init() {
+    names.addAll(DEFAULTS);
+  }
 }

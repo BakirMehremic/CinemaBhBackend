@@ -1,15 +1,20 @@
 package com.atlantbh.cinemabh.util;
 
-import static com.atlantbh.cinemabh.constant.RateLimitConstants.VERIFICATION_CODES_RESEND_LIMIT_SECONDS;
-
+import com.atlantbh.cinemabh.config.properties.RateLimitProperties;
 import java.time.Instant;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public final class AuthUtils {
-  public static Instant getResendAt() {
-    return Instant.now().plusSeconds(VERIFICATION_CODES_RESEND_LIMIT_SECONDS);
+  private final RateLimitProperties rateLimitProperties;
+
+  public Instant getResendAt() {
+    return Instant.now().plus(rateLimitProperties.getVerificationResendCooldown());
   }
 
-  public static Instant getResendAt(Instant createdAt) {
-    return createdAt.plusSeconds(VERIFICATION_CODES_RESEND_LIMIT_SECONDS);
+  public Instant getResendAt(Instant createdAt) {
+    return createdAt.plus(rateLimitProperties.getVerificationResendCooldown());
   }
 }

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -25,6 +26,7 @@ public class VerificationCode {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
+  @CreationTimestamp
   @Column(nullable = false)
   private LocalDateTime createdAt;
 

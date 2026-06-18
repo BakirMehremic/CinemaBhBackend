@@ -1,7 +1,7 @@
 package com.atlantbh.cinemabh.constant;
 
 public class UserConstants {
-  public static final int EMAIL_MIN_LENGTH = 8;
+  public static final int EMAIL_MIN_LENGTH = 6;
   public static final int EMAIL_MAX_LENGTH = 254;
   public static final int FIRST_NAME_MAX_LENGTH = 254;
   public static final int LAST_NAME_MAX_LENGTH = 254;

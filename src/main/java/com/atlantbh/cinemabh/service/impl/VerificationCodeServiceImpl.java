@@ -1,8 +1,8 @@
 package com.atlantbh.cinemabh.service.impl;
 
-import static com.atlantbh.cinemabh.constant.RateLimitConstants.VERIFICATION_CODES_RESEND_LIMIT_SECONDS;
 import static com.atlantbh.cinemabh.util.HashingUtils.toSha256;
 
+import com.atlantbh.cinemabh.config.properties.RateLimitProperties;
 import com.atlantbh.cinemabh.config.properties.VerificationProperties;
 import com.atlantbh.cinemabh.entity.VerificationCode;
 import com.atlantbh.cinemabh.enums.AuthEventOutcome;
@@ -30,6 +30,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
   private final VerificationCodeRepository verificationCodeRepository;
   private final UserRepository userRepository;
   private final VerificationProperties verificationProperties;
+  private final RateLimitProperties rateLimitProperties;
 
   private String generateSixDigitCode() {
     return IntStream.range(0, 6)
@@ -54,8 +55,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     codeEntity.setCodeHash(toSha256(code));
     codeEntity.setCreatedAt(LocalDateTime.now());
-    codeEntity.setExpiresAt(
-        LocalDateTime.now().plusMinutes(verificationProperties.getExpirationMinutes()));
+    codeEntity.setExpiresAt(LocalDateTime.now().plus(verificationProperties.getExpiration()));
 
     verificationCodeRepository.save(codeEntity);
 
@@ -113,7 +113,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     }
 
     LocalDateTime cutoffTime =
-        LocalDateTime.now().minusSeconds(VERIFICATION_CODES_RESEND_LIMIT_SECONDS);
+        LocalDateTime.now().minus(rateLimitProperties.getVerificationResendCooldown());
 
     if (verificationCode.get().getCreatedAt().isBefore(cutoffTime)) {
       return false;

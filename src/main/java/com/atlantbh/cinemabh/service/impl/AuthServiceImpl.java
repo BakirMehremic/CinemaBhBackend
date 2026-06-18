@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
   private final CityRepository cityRepository;
   private final VerificationCodeRepository verificationCodeRepository;
@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
   private final VerificationCodeService verificationCodeService;
   private final EmailValidator emailValidator;
   private final ReservedNameValidator reservedNameValidator;
+  private final AuthUtils authUtils;
 
   @Override
   @Transactional
@@ -153,7 +154,7 @@ public class UserServiceImpl implements UserService {
           existingCode
               .map(
                   code ->
-                      AuthUtils.getResendAt(
+                      authUtils.getResendAt(
                           code.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()))
               .orElseGet(Instant::now);
 
