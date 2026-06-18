@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.entity;
 
+import static com.atlantbh.cinemabh.constant.LocationConstants.COUNTRY_NAME_MAX_LENGTH;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,7 +26,7 @@ public class Country {
   @Setter(AccessLevel.NONE)
   private Long id;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false, unique = true, length = COUNTRY_NAME_MAX_LENGTH)
   private String name;
 
   @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)

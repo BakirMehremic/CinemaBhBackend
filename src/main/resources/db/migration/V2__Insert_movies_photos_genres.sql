@@ -315,6 +315,11 @@ VALUES
 INSERT INTO photos (image_path, is_cover_photo, movie_id)
 VALUES -- avengers
        ('https://ik.imagekit.io/4oxyrugmfe/avengers.jpg', true, 1),
+       ('https://image.tmdb.org/t/p/original/tLf5hjuO4gx62lVojPiHsIzCroh.jpg', false, 1),
+       ('https://image.tmdb.org/t/p/original/foyiQu23zq4WhmffnQkFiNAvqcJ.jpg', false, 1),
+       ('https://image.tmdb.org/t/p/original/kHOfxq7cMTXyLbj0UmdoGhT540O.jpg', false, 1),
+       ('https://ik.imagekit.io/4oxyrugmfe/avengers.jpg', false, 1),
+       ('https://ik.imagekit.io/4oxyrugmfe/avengers.jpg', false, 1),
 -- chase
        ('https://image.tmdb.org/t/p/original/tLf5hjuO4gx62lVojPiHsIzCroh.jpg', true, 2),
 -- black phone 2

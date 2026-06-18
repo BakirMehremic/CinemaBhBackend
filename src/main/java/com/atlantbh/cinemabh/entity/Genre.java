@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.entity;
 
+import static com.atlantbh.cinemabh.constant.GenreConstants.GENRE_NAME_MAX_LENGTH;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ public class Genre {
   @Setter(AccessLevel.NONE)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = GENRE_NAME_MAX_LENGTH)
   private String name;
 
   @ManyToMany(mappedBy = "genres")

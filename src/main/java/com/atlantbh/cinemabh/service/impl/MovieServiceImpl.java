@@ -7,7 +7,10 @@ import com.atlantbh.cinemabh.dto.request.movie.FilterUpcomingMoviesRequest;
 import com.atlantbh.cinemabh.dto.response.MoviePreviewResponse;
 import com.atlantbh.cinemabh.dto.response.MovieShowingResponse;
 import com.atlantbh.cinemabh.entity.Movie;
+import com.atlantbh.cinemabh.exception.NotFoundException;
 import com.atlantbh.cinemabh.mapper.MovieMapper;
+import com.atlantbh.cinemabh.projection.MovieDetailsProjection;
+import com.atlantbh.cinemabh.projection.MoviePreviewProjection;
 import com.atlantbh.cinemabh.projection.MovieShowingProjection;
 import com.atlantbh.cinemabh.projection.MovieUpcomingProjection;
 import com.atlantbh.cinemabh.repository.MovieRepository;
@@ -68,14 +71,11 @@ public class MovieServiceImpl implements MovieService {
   }
 
   @Override
-  public Page<MoviePreviewResponse> getMoviePreviewsPaginatedByVenueId(
+  public Page<MoviePreviewProjection> getMoviePreviewsPaginatedByVenueId(
       FilterMovieByVenueIdRequest filter) {
     Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize());
 
-    Page<Movie> movies =
-        movieRepository.getMoviesShowingPreviewsByVenueId(pageable, filter.getVenueId());
-
-    return movies.map(movieMapper::toPreviewResponse);
+    return movieRepository.getMoviesShowingPreviewsByVenueId(pageable, filter.getVenueId());
   }
 
   @Override
@@ -90,5 +90,13 @@ public class MovieServiceImpl implements MovieService {
         filter.getCityId(),
         filter.getVenueId(),
         filter.getGenreId());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public MovieDetailsProjection getMovieDetailsById(Long movieId) {
+    return movieRepository
+        .getMovieDetailsById(movieId)
+        .orElseThrow(() -> new NotFoundException("Movie with id " + movieId + " not found"));
   }
 }

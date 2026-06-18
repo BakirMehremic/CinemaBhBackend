@@ -1,5 +1,7 @@
 package com.atlantbh.cinemabh.entity;
 
+import static com.atlantbh.cinemabh.constant.LocationConstants.CITY_NAME_MAX_LENGTH;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,7 +28,7 @@ public class City {
   @Setter(AccessLevel.NONE)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = CITY_NAME_MAX_LENGTH)
   private String name;
 
   @ManyToOne(fetch = FetchType.LAZY)

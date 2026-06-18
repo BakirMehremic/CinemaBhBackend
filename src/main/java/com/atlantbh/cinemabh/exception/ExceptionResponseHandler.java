@@ -2,6 +2,8 @@ package com.atlantbh.cinemabh.exception;
 
 import com.atlantbh.cinemabh.dto.response.ErrorResponse;
 import com.atlantbh.cinemabh.dto.response.UserVerificationErrorResponse;
+import com.atlantbh.cinemabh.util.ExceptionHandlingUtils;
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,12 +71,29 @@ public class ExceptionResponseHandler {
   }
 
   @ExceptionHandler(UserNotVerifiedException.class)
-  public ResponseEntity<UserVerificationErrorResponse> handleUserNotVerified(UserNotVerifiedException ex) {
-    UserVerificationErrorResponse errorResponseBody = new UserVerificationErrorResponse(
-            ex.getMessage(),
-            ex.getResendVerificationCodeAt()
-    );
+  public ResponseEntity<UserVerificationErrorResponse> handleUserNotVerified(
+      UserNotVerifiedException ex) {
+    UserVerificationErrorResponse errorResponseBody =
+        new UserVerificationErrorResponse(ex.getMessage(), ex.getResendVerificationCodeAt());
 
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponseBody);
+  }
+
+  // thrown for jakarta validation errors for path/query params
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<List<ErrorResponse>> handleConstraintViolationException(
+      ConstraintViolationException ex) {
+
+    List<ErrorResponse> errorResponses =
+        ex.getConstraintViolations().stream()
+            .map(
+                violation ->
+                    new ErrorResponse(
+                        ExceptionHandlingUtils.extractFieldName(violation.getPropertyPath())
+                            + ": "
+                            + violation.getMessage()))
+            .toList();
+
+    return ResponseEntity.badRequest().body(errorResponses);
   }
 }

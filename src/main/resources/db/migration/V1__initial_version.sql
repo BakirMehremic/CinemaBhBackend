@@ -7,7 +7,7 @@ CREATE TYPE "movie_status" AS ENUM (
 CREATE TYPE "personnel_type" AS ENUM (
     'DIRECTOR',
     'WRITER',
-    'CAST'
+    'ACTOR'
     );
 
 CREATE TYPE "seat_type" AS ENUM (
@@ -36,10 +36,10 @@ CREATE TABLE "users"
 (
     "id"            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "role"          user_role           NOT NULL,
-    "password_hash" VARCHAR(255)        NOT NULL,
-    "first_name"    VARCHAR(100)        NOT NULL,
-    "last_name"     VARCHAR(80)         NOT NULL,
-    "phone_number"  VARCHAR(25) UNIQUE,
+    "password_hash" VARCHAR(60)         NOT NULL,
+    "first_name"    VARCHAR(254)        NOT NULL,
+    "last_name"     VARCHAR(254)        NOT NULL,
+    "phone_number"  VARCHAR(15) UNIQUE,
     "email"         VARCHAR(255) UNIQUE NOT NULL,
     "street"        VARCHAR(150),
     "image_path"    VARCHAR(255),
@@ -67,7 +67,7 @@ CREATE TABLE "venues"
 (
     "id"            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "name"          VARCHAR(100) NOT NULL,
-    "street"        VARCHAR(100) NOT NULL,
+    "street"        VARCHAR(150) NOT NULL,
     "street_number" VARCHAR(20),
     "phone"         VARCHAR(255),
     "image_path"    VARCHAR(255) NOT NULL,
@@ -130,7 +130,9 @@ CREATE TABLE "movies_personnel"
 (
     "movie_id"     BIGINT NOT NULL,
     "personnel_id" BIGINT NOT NULL,
-    PRIMARY KEY ("movie_id", "personnel_id")
+    "position"     SMALLINT CHECK ( "position" > 0 ),
+    PRIMARY KEY ("movie_id", "personnel_id"),
+    UNIQUE ("movie_id", "position", "personnel_id")
 );
 
 CREATE TABLE "seats"
